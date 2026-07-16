@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,minimal-ui">
+  <meta name="theme-color" content="#08070d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CSD 64">
+  <meta name="format-detection" content="telephone=no">
+  <title>CSD 64 — iPhone 5s Portrait</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="viewport">
+    <main id="console" aria-label="CSD 64 portrait emulator">
+      <section id="display" aria-label="Game screen">
+        <div id="idle-screen">
+          <div class="idle-sky"></div>
+          <div class="idle-hills hill-back"></div>
+          <div class="idle-hills hill-front"></div>
+          <div class="idle-castle" aria-hidden="true">
+            <span class="tower tower-a"></span>
+            <span class="tower tower-b"></span>
+            <span class="tower tower-c"></span>
+            <span class="keep"></span>
+          </div>
+          <div class="idle-title"><span>CSD</span><b>64</b></div>
+          <div class="idle-copy">IPHONE 5S PORTRAIT EDITION</div>
+          <button id="load-rom-hero" class="hero-button" type="button">LOAD N64 ROM</button>
+          <div id="stored-rom-note" class="stored-rom-note" hidden></div>
+        </div>
+
+        <iframe id="emulator-frame" title="Nintendo 64 emulator" allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer"></iframe>
+
+        <div id="screen-loader" hidden>
+          <div class="loader-ring" aria-hidden="true"></div>
+          <div id="screen-loader-text">PREPARING CORE</div>
+        </div>
+
+        <div id="screen-error" hidden>
+          <strong id="screen-error-title">CORE ERROR</strong>
+          <span id="screen-error-message"></span>
+          <button id="screen-error-close" type="button">CLOSE</button>
+        </div>
+
+        <div id="screen-status" aria-live="polite"></div>
+      </section>
+
+      <section id="shoulder-row" aria-label="Shoulder controls">
+        <button class="shoulder control" data-control="l" aria-label="L shoulder button" type="button"><span>L</span></button>
+        <button id="menu-button" aria-label="Open emulator menu" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/></svg>
+        </button>
+        <button class="shoulder control" data-control="r" aria-label="R shoulder button" type="button"><span>R</span></button>
+      </section>
+
+      <section id="deck" aria-label="Nintendo 64 touch controller">
+        <div class="deck-grid" aria-hidden="true"></div>
+
+        <div id="analog-zone" class="control-zone" aria-label="Analog stick">
+          <div class="analog-gate">
+            <div id="analog-knob" class="analog-knob"><span></span></div>
+          </div>
+        </div>
+
+        <div id="face-cluster" aria-label="A, B, and Z buttons">
+          <button class="face face-z control" data-control="z" aria-label="Z trigger" type="button">Z</button>
+          <button class="face face-b control" data-control="b" aria-label="B button" type="button">B</button>
+          <button class="face face-a control" data-control="a" aria-label="A button" type="button">A</button>
+          <span class="face-link link-zb" aria-hidden="true"></span>
+          <span class="face-link link-za" aria-hidden="true"></span>
+        </div>
+
+        <button id="start-button" class="start control" data-control="start" aria-label="Start button" type="button"><span></span><small>START</small></button>
+
+        <div id="dpad-zone" class="control-zone" aria-label="Directional pad">
+          <div class="dpad-shape" aria-hidden="true">
+            <span class="dpad-arm dpad-up"><i></i></span>
+            <span class="dpad-arm dpad-down"><i></i></span>
+            <span class="dpad-arm dpad-left"><i></i></span>
+            <span class="dpad-arm dpad-right"><i></i></span>
+            <span class="dpad-center"></span>
+          </div>
+        </div>
+
+        <div id="c-buttons" aria-label="C buttons">
+          <button class="c-button c-up control" data-control="c_up" aria-label="C up" type="button"><span>▲</span></button>
+          <button class="c-button c-left control" data-control="c_left" aria-label="C left" type="button"><span>◀</span></button>
+          <button class="c-button c-right control" data-control="c_right" aria-label="C right" type="button"><span>▶</span></button>
+          <button class="c-button c-down control" data-control="c_down" aria-label="C down" type="button"><span>▼</span></button>
+          <span class="c-link c-link-h" aria-hidden="true"></span>
+          <span class="c-link c-link-v" aria-hidden="true"></span>
+        </div>
+
+        <div class="deck-brand" aria-hidden="true"><b>CSD</b><span>64</span><small>5S</small></div>
+      </section>
+
+      <section id="menu-overlay" hidden aria-label="Emulator menu">
+        <div id="menu-panel" role="dialog" aria-modal="true" aria-labelledby="menu-title">
+          <header>
+            <div>
+              <strong id="menu-title">CSD 64</strong>
+              <span>iPhone 5s profile</span>
+            </div>
+            <button id="menu-close" type="button" aria-label="Close menu">×</button>
+          </header>
+
+          <div class="menu-scroll">
+            <button id="menu-load-rom" class="menu-action primary" type="button">Choose N64 ROM</button>
+            <button id="menu-play-stored" class="menu-action" type="button" hidden>Play saved ROM</button>
+            <button id="menu-resume" class="menu-action" type="button" disabled>Resume game</button>
+            <button id="menu-restart" class="menu-action" type="button" disabled>Restart game</button>
+            <button id="menu-close-game" class="menu-action danger" type="button" disabled>Close game</button>
+
+            <div class="menu-section offline-section">
+              <div class="menu-section-title">OFFLINE ENGINE</div>
+              <div class="offline-install-box">
+                <button id="menu-install-offline" class="menu-action offline-action" type="button">Install offline engine</button>
+                <p id="offline-detail">Checking the pinned N64 engine cache…</p>
+              </div>
+            </div>
+
+            <div class="menu-section">
+              <div class="menu-section-title">5S PERFORMANCE</div>
+              <label class="setting-row">
+                <span><b>Low-overhead mode</b><small>Forces legacy cores, disables threads and shaders.</small></span>
+                <input id="setting-low-overhead" type="checkbox" checked>
+              </label>
+              <label class="setting-row">
+                <span><b>Smooth scaling</b><small>Recommended for N64. Turn off for a sharper image.</small></span>
+                <input id="setting-smooth" type="checkbox" checked>
+              </label>
+              <label class="setting-row">
+                <span><b>Keep ROM offline</b><small>Saves one ROM in IndexedDB when storage permits.</small></span>
+                <input id="setting-save-rom" type="checkbox">
+              </label>
+              <label class="setting-row volume-row">
+                <span><b>Volume</b><small>Applied immediately when the core supports it.</small></span>
+                <input id="setting-volume" type="range" min="0" max="100" step="5" value="75">
+              </label>
+            </div>
+
+            <div class="menu-section device-section">
+              <div class="menu-section-title">DEVICE STATUS</div>
+              <div class="device-line"><span>Viewport</span><b id="diag-viewport">—</b></div>
+              <div class="device-line"><span>Standalone</span><b id="diag-standalone">—</b></div>
+              <div class="device-line"><span>WebGL</span><b id="diag-webgl">—</b></div>
+              <div class="device-line"><span>Offline shell</span><b id="diag-sw">—</b></div>
+              <div class="device-line"><span>Offline engine</span><b id="diag-engine">CHECKING</b></div>
+            </div>
+
+            <p class="legal-note">No games or commercial assets are included. Load only ROM dumps you are permitted to use.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <input id="rom-picker" type="file" accept=".z64,.n64,.v64,application/zip" hidden>
+  <script src="js/app.js"></script>
+</body>
+</html>
