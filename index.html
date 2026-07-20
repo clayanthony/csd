@@ -4,26 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#132c28">
-  <title>Little Bear: Words of Home — Web Prototype</title>
+  <title>Little Bear: Words of Home — Complete Campaign</title>
   <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
   <main class="page-shell">
-    <section class="game-shell" aria-label="Little Bear: Words of Home game prototype">
+    <section class="game-shell" aria-label="Little Bear: Words of Home complete campaign">
       <div class="game-frame" id="game-frame">
         <canvas id="game" width="768" height="512" tabindex="0" aria-label="Explore the reading trail with Little Bear"></canvas>
         <div class="pixel-glass" aria-hidden="true"></div>
 
         <header class="hud hidden" id="hud">
           <div>
-            <span class="eyebrow">TRAILHEAD DEMO</span>
-            <strong id="objective">Find the six picture signs</strong>
+            <span class="eyebrow" id="location-label">ACT 1 · CHAPTER 1 · MISSION 1</span>
+            <strong id="objective">Find the six word signs</strong>
           </div>
-          <button class="hud-button" id="journal-button" type="button" aria-label="Open word journal">WORDS <span id="seen-count">0/6</span></button>
+          <div class="hud-actions">
+            <button class="hud-button" id="map-button" type="button" aria-label="Open journey map">MAP</button>
+            <button class="hud-button" id="journal-button" type="button" aria-label="Open word journal">WORDS <span id="seen-count">0/750</span></button>
+          </div>
         </header>
 
         <section class="title-screen screen active" id="title-screen" aria-labelledby="game-title">
-          <img src="assets/little-bear-hybrid.png" alt="Little Bear approaches a reading-trail sign in a pixel-art parkland community">
+          <img src="assets/act-5-meaning-v3.png" alt="Pixel-art parkland trails converge at a hilltop reading pavilion">
           <div class="title-scrim"></div>
           <div class="title-copy">
             <p class="kicker">A CREE-FIRST READING ADVENTURE</p>
@@ -33,8 +36,18 @@
               <button class="primary-button" id="start-button" type="button">BEGIN TRAIL</button>
               <button class="secondary-button hidden" id="continue-button" type="button">CONTINUE</button>
             </div>
-            <small>Silent play · no typing · progress saves on this device</small>
+            <small>25 chapters · 125 missions · 750 words · silent play · no typing</small>
           </div>
+        </section>
+
+        <section class="mission-banner modal hidden" id="mission-banner" aria-modal="true" role="dialog" aria-labelledby="mission-banner-title">
+          <p class="kicker" id="mission-banner-kicker">ACT 1 · CHAPTER 1</p>
+          <h2 id="mission-banner-title">The First Blank Sign</h2>
+          <p class="mission-name" id="mission-banner-name">Mission 1 · A Sign with No Words</p>
+          <p class="mission-theme" id="mission-banner-theme">Greetings, noticing, and the first things Little Bear can point to.</p>
+          <div class="mission-word-preview" id="mission-word-preview"></div>
+          <p class="speaker-note">Explore six word signs. Cree appears first; English support always remains available.</p>
+          <button class="primary-button" id="begin-mission-button" type="button"><kbd>A</kbd> BEGIN MISSION</button>
         </section>
 
         <section class="word-card modal hidden" id="word-card" aria-modal="true" role="dialog" aria-labelledby="cree-word">
@@ -46,6 +59,7 @@
             <p class="cree-word" id="cree-word">maskwa</p>
             <p class="english-word" id="english-word">bear</p>
             <p class="translation-note" id="translation-note">English support is visible on early encounters.</p>
+            <p class="word-meta" id="word-meta">Noun · speaker verification required</p>
           </div>
           <div class="modal-actions">
             <button class="secondary-button" id="translation-button" type="button"><kbd>B</kbd> ENGLISH</button>
@@ -55,9 +69,9 @@
 
         <section class="challenge modal hidden" id="challenge" aria-modal="true" role="dialog" aria-labelledby="challenge-title">
           <div class="challenge-heading">
-            <p class="kicker">TRAIL CHECK <span id="round-label">1/5</span></p>
-            <h2 id="challenge-title">Which picture matches <span id="challenge-word">maskwa</span>?</h2>
-            <p>Choose by meaning. English appears after your choice.</p>
+            <p class="kicker"><span id="challenge-kind-label">MISSION CHECK</span> <span id="round-label">1/6</span></p>
+            <h2 id="challenge-title"><span id="challenge-prompt">Which meaning matches</span> <span id="challenge-word">maskwa</span>?</h2>
+            <p id="challenge-instruction">Choose by meaning. No spelling or typing.</p>
           </div>
           <div class="choice-grid" id="choice-grid"></div>
           <p class="feedback" id="challenge-feedback" aria-live="polite"></p>
@@ -67,12 +81,37 @@
         <section class="complete-screen modal hidden" id="complete-screen" aria-modal="true" role="dialog" aria-labelledby="complete-title">
           <p class="kicker">TRAIL SIGN COMPLETE</p>
           <h2 id="complete-title">Six words now belong to this place.</h2>
-          <p>You can keep exploring, revisit every word, or open the journal. Repeated encounters will gradually hide the English support—but it always remains available.</p>
+          <p id="complete-copy">This mission is complete. Its words will return in later checks.</p>
           <div class="completion-stats">
-            <span><strong id="complete-seen">6</strong> words seen</span>
+            <span><strong id="complete-seen">6</strong> words encountered</span>
             <span><strong id="complete-correct">0</strong> correct choices</span>
           </div>
-          <button class="primary-button" id="keep-exploring-button" type="button">KEEP EXPLORING</button>
+          <button class="primary-button" id="keep-exploring-button" type="button">CONTINUE JOURNEY</button>
+        </section>
+
+        <section class="journey-map modal full-modal hidden" id="journey-map" aria-modal="true" role="dialog" aria-labelledby="journey-map-title">
+          <header class="journal-header">
+            <div>
+              <p class="kicker">JOURNEY MAP</p>
+              <h2 id="journey-map-title">Act <span id="map-act-number">1</span>: <span id="map-act-name">Words Close to Home</span></h2>
+            </div>
+            <button class="close-button" id="map-close-button" type="button" aria-label="Close journey map">×</button>
+          </header>
+          <div class="act-navigation">
+            <button class="secondary-button" id="previous-act-button" type="button"><span class="direction-icon left" aria-hidden="true"></span> ACT</button>
+            <p id="act-progress-label">0 of 5 chapters complete</p>
+            <button class="secondary-button" id="next-act-button" type="button">ACT <span class="direction-icon right" aria-hidden="true"></span></button>
+          </div>
+          <div class="chapter-grid" id="chapter-grid"></div>
+          <section class="mission-select" aria-labelledby="selected-chapter-title">
+            <div>
+              <p class="kicker" id="selected-chapter-label">CHAPTER 1</p>
+              <h3 id="selected-chapter-title">The First Blank Sign</h3>
+              <p id="selected-chapter-theme"></p>
+            </div>
+            <div class="mission-grid" id="mission-grid"></div>
+          </section>
+          <footer><span id="campaign-total">0 of 750 words encountered</span><span id="campaign-missions">0 of 125 missions complete</span></footer>
         </section>
 
         <section class="journal modal full-modal hidden" id="journal" aria-modal="true" role="dialog" aria-labelledby="journal-title">
@@ -84,9 +123,9 @@
             <button class="close-button" id="journal-close-button" type="button" aria-label="Close journal">×</button>
           </header>
           <div class="journal-tools">
-            <button type="button" id="previous-chapter-button">◀ CHAPTER</button>
+            <button type="button" id="previous-chapter-button"><span class="direction-icon left" aria-hidden="true"></span> CHAPTER</button>
             <button type="button" id="journal-translation-button">ENGLISH: ON</button>
-            <button type="button" id="next-chapter-button">CHAPTER ▶</button>
+            <button type="button" id="next-chapter-button">CHAPTER <span class="direction-icon right" aria-hidden="true"></span></button>
           </div>
           <div class="journal-list" id="journal-list"></div>
           <footer><span id="journal-total">0 of 750 encountered</span><span>Translations are independent meanings, not word-for-word grammar.</span></footer>
@@ -96,8 +135,31 @@
           <p class="kicker">PAUSED</p>
           <h2 id="pause-title">Trail menu</h2>
           <button class="primary-button" id="resume-button" type="button">RESUME</button>
-          <button class="secondary-button" id="restart-button" type="button">RESTART DEMO</button>
+          <button class="secondary-button" id="pause-map-button" type="button">JOURNEY MAP</button>
+          <button class="secondary-button" id="restart-button" type="button">RESTART JOURNEY</button>
           <p class="small-print">Language forms and final sentence content require community speaker approval before release.</p>
+        </section>
+
+        <section class="restart-confirm modal hidden" id="restart-confirm" aria-modal="true" role="dialog" aria-labelledby="restart-confirm-title">
+          <p class="kicker">RESTART JOURNEY?</p>
+          <h2 id="restart-confirm-title">Clear every saved word and chapter?</h2>
+          <p>This cannot be undone. Your 750-word journal, mission progress and act checks will return to the beginning.</p>
+          <div class="confirm-actions">
+            <button class="secondary-button" id="cancel-restart-button" type="button">KEEP MY JOURNEY</button>
+            <button class="danger-button" id="confirm-restart-button" type="button">YES, RESTART</button>
+          </div>
+        </section>
+
+        <section class="ending-screen modal hidden" id="ending-screen" aria-modal="true" role="dialog" aria-labelledby="ending-title">
+          <p class="kicker">THE TRAIL OPENS</p>
+          <h2 id="ending-title">All 750 words have a place on the trail.</h2>
+          <p>Little Bear has completed 125 missions across five acts. Every encountered word remains in the journal and every completed chapter can be replayed.</p>
+          <div class="completion-stats">
+            <span><strong>750</strong> curriculum words</span>
+            <span><strong>25</strong> chapters</span>
+            <span><strong>5</strong> act gates</span>
+          </div>
+          <button class="primary-button" id="ending-map-button" type="button">REVISIT THE TRAIL</button>
         </section>
 
         <div class="toast hidden" id="toast" aria-live="polite"></div>
@@ -105,10 +167,10 @@
 
       <div class="controls" aria-label="Game controls">
         <div class="dpad" aria-label="Movement controls">
-          <button data-direction="up" aria-label="Move up">▲</button>
-          <button data-direction="left" aria-label="Move left">◀</button>
-          <button data-direction="down" aria-label="Move down">▼</button>
-          <button data-direction="right" aria-label="Move right">▶</button>
+          <button data-direction="up" aria-label="Move up"><span class="direction-icon up" aria-hidden="true"></span></button>
+          <button data-direction="left" aria-label="Move left"><span class="direction-icon left" aria-hidden="true"></span></button>
+          <button data-direction="down" aria-label="Move down"><span class="direction-icon down" aria-hidden="true"></span></button>
+          <button data-direction="right" aria-label="Move right"><span class="direction-icon right" aria-hidden="true"></span></button>
         </div>
         <div class="system-controls">
           <button id="menu-button" type="button">MENU</button>
@@ -123,6 +185,6 @@
   </main>
 
   <script src="js/lexicon-data.js"></script>
-  <script src="js/game.js"></script>
+  <script src="js/game-v3.js"></script>
 </body>
 </html>

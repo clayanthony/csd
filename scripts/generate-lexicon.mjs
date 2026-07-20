@@ -30,6 +30,7 @@ const chapters = storyMap.chapters.map((chapter) => ({
   actTitle: chapter.act_title,
   title: chapter.title,
   theme: chapter.theme,
+  story: chapter.story,
   grammar: chapter.grammar
 }));
 

@@ -11258,6 +11258,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Close to Home",
     "title": "The First Blank Sign",
     "theme": "greetings, noticing, and the first things Little Bear can point to",
+    "story": "Little Bear is invited to help build a new community reading trail. The first blank sign stands beside home. By naming what is near and greeting the people who pass, Little Bear earns the trail map and chooses to continue.",
     "grammar": "Recognize a Cree word as a written unit; distinguish a label from a statement; pair simple demonstratives with animate or inanimate nouns after speaker verification."
   },
   {
@@ -11266,6 +11267,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Close to Home",
     "title": "A Place for Everything",
     "theme": "home, rooms, furniture, tools, and ordinary household objects",
+    "story": "The home sign must be easy for young readers to explore. Little Bear moves through each room, matches labels to objects, opens and closes storage, and restores order before placing the finished sign outside.",
     "grammar": "Build verified animate/inanimate noun phrases; notice that grammatical animacy is not the same as biological life."
   },
   {
@@ -11274,6 +11276,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Close to Home",
     "title": "The People Who Make Home",
     "theme": "people, family, friends, and everyday relationships",
+    "story": "The next sign belongs to the people who make a home and community. Little Bear delivers cards to family members and friends, then places each relationship word around a drawing made by the community’s children.",
     "grammar": "Recognize person and kinship forms; distinguish lexicalized ‘my/your’ forms from free personal pronouns; do not generalize possessive patterns without instruction."
   },
   {
@@ -11282,6 +11285,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Close to Home",
     "title": "Little Bear Gets Ready",
     "theme": "body parts, clothing, dressing, and personal care",
+    "story": "A cool morning arrives. Little Bear must choose clothing for the trail and label the body-and-clothing board. A comic mix-up—mitts near feet and shoes near hands—is corrected entirely through reading.",
     "grammar": "Read noun labels in context; compare noun pairs and descriptive forms; construct verified noun phrases with colour or condition words."
   },
   {
@@ -11290,6 +11294,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Close to Home",
     "title": "The Shared Table",
     "theme": "food, cooking, eating, drinking, and kitchen actions",
+    "story": "The first act ends with a shared meal. Little Bear gathers ingredients, reads simple task cards, sets the table, and discovers that written action words can tell who is doing what.",
     "grammar": "Introduce animate-intransitive action statements and the contrast between ‘eat/drink’ and ‘eat/drink it’ forms; build only speaker-approved surface sentences."
   },
   {
@@ -11298,6 +11303,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words on the Land",
     "title": "Tracks in the Trees",
     "theme": "large and familiar land animals",
+    "story": "Little Bear follows tracks to decide which animal words belong on the forest sign. The task is observation, not hunting: each footprint, silhouette, and written name must agree before the path opens.",
     "grammar": "Reinforce animate nouns and animate demonstratives; read simple animate-noun plus action patterns after verification."
   },
   {
@@ -11306,6 +11312,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words on the Land",
     "title": "Wings, Water, and Small Lives",
     "theme": "birds, fish, insects, and smaller animal life",
+    "story": "At the wetland board, animal names are grouped by where they are seen: sky, shore, water, grass, or trees. Little Bear learns that grammatical categories and habitat categories answer different questions.",
     "grammar": "Sort animate nouns without treating semantic groups as grammar rules; review singular/plural recognition using verified forms."
   },
   {
@@ -11314,6 +11321,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words on the Land",
     "title": "The Berry Path",
     "theme": "trees, plants, berries, earth, and land features",
+    "story": "A trail branch leads through trees, grasses, and berry patches. Little Bear reads plant labels, chooses a route that leaves growing places undisturbed, and fills a sign with words for the land itself.",
     "grammar": "Build location-rich noun phrases; distinguish a thing from a place where it is found; introduce locative meaning without copying source explanations."
   },
   {
@@ -11322,6 +11330,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words on the Land",
     "title": "Across the Water",
     "theme": "water, travel by water, shoreline, and spatial directions",
+    "story": "The reading trail crosses a lake edge. Little Bear repairs directional markers, chooses safe routes, and helps place the water sign where readers can see it without approaching unsafe ground.",
     "grammar": "Read location and direction words; combine a verified location word with a noun phrase; distinguish static location from motion toward a place."
   },
   {
@@ -11330,6 +11339,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words on the Land",
     "title": "What the Sky Is Doing",
     "theme": "sky, weather, temperature, light, and colours",
+    "story": "Clouds move over the trail. Little Bear reads the sky board, compares conditions, and decides which tasks are safe to finish before the weather changes. Colour words help distinguish matching objects and signs.",
     "grammar": "Introduce inanimate-intransitive weather statements and animate/inanimate descriptive pairs; never infer one form from another without a verified rule."
   },
   {
@@ -11338,6 +11348,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Through Time",
     "title": "The Four-Season Storehouse",
     "theme": "the year, named months, seasonal changes, and supplies kept for different times",
+    "story": "The trail map needs a calendar beside the community storehouse. Little Bear orders the available month and season cards, then sorts pantry goods, gear, and everyday supplies by when or where they are used. The story never implies that every season has one fixed cultural activity.",
     "grammar": "Read calendar nouns and seasonal VII forms; use time labels to organize inventory statements without requiring spoken recitation."
   },
   {
@@ -11346,6 +11357,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Through Time",
     "title": "Before, Now, and Next",
     "theme": "days, night, morning, sequence, and relative time",
+    "story": "The reading trail must tell visitors when activities happen. Little Bear arranges cards from morning to night and from yesterday through tomorrow, then repairs a sequence whose steps were placed out of order.",
     "grammar": "Place time words around a verified statement; read sequence and frequency words; distinguish a calendar label from a full proposition."
   },
   {
@@ -11354,6 +11366,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Through Time",
     "title": "Thirty Stones",
     "theme": "numbers, counting, quantities, and comparison",
+    "story": "Thirty marked stones are needed to anchor the next sign. Little Bear counts, groups, compares, and notices that reading a number word is different from recognizing a numeral symbol.",
     "grammar": "Read cardinal number words and quantity questions; combine verified numerals with appropriate noun forms only after plural rules are supplied."
   },
   {
@@ -11362,6 +11375,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Through Time",
     "title": "The Long Way Around",
     "theme": "movement, routes, transport, and travel actions",
+    "story": "A bridge is temporarily closed, so Little Bear reads alternate route cards. Walking, running, paddling, driving, arriving, and returning become a story about choosing the right action for the right path.",
     "grammar": "Read VAI movement statements; compare motion toward, away, home, inside, and outside; introduce preverbs only as separately verified building blocks."
   },
   {
@@ -11370,6 +11384,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words Through Time",
     "title": "Morning to Night",
     "theme": "daily actions, routines, and ordinary tasks",
+    "story": "Little Bear spends one full day completing small trail jobs. The player reads action cards, orders routines, and sees how a sequence of simple statements can become a tiny story.",
     "grammar": "Read common VAI and VTI actions; construct two-step sequences with time words; distinguish action-word classes by their argument needs."
   },
   {
@@ -11378,6 +11393,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words With Others",
     "title": "The Writing House",
     "theme": "reading, writing, school, books, and language work",
+    "story": "At the learning centre, Little Bear helps prepare the trail’s printed cards. The player sorts letters and words, reads labels, catches mismatches, and assembles missing labels from approved on-screen word tiles.",
     "grammar": "Distinguish word, phrase, and statement; recognize reading/writing verbs and the difference between doing an activity and acting on a written object."
   },
   {
@@ -11386,6 +11402,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words With Others",
     "title": "Many Hands Build the Trail",
     "theme": "work, making, carrying, helping, caring, and cooperation",
+    "story": "Rain has softened the ground around several posts. No one character fixes everything. Little Bear reads task cards while many community members carry, place, make, repair, help, and check the trail together.",
     "grammar": "Compare VAI, VTI, and VTA meanings through verified participant roles; see why ‘help someone’ and ‘work’ use different structures."
   },
   {
@@ -11394,6 +11411,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words With Others",
     "title": "What Little Bear Thinks and Feels",
     "theme": "feelings, preferences, knowledge, wanting, and evaluation",
+    "story": "A difficult set of labels makes Little Bear frustrated and unsure. Friends do not solve it for him; they help him name what he feels, ask for help, compare choices, and continue with confidence.",
     "grammar": "Read mental-state and descriptive verbs; distinguish liking a thing from liking a person through VTI/VTA class information."
   },
   {
@@ -11402,6 +11420,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words With Others",
     "title": "Strong, Safe, and Playful",
     "theme": "play, exercise, tools, health, care, and safety vocabulary",
+    "story": "Before the trail opens, the group takes a break for games and checks the tool-and-safety board. Health and adult-context words appear only in neutral recognition tasks, never as rewards or comic props.",
     "grammar": "Read action and safety labels; follow written directions; review imperatives only when speaker-approved forms are provided."
   },
   {
@@ -11410,6 +11429,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Words With Others",
     "title": "The Community Table and Map",
     "theme": "community places, shared food, gatherings, and routes",
+    "story": "The separate signs are joined into one community map beside a shared table. Little Bear checks place labels, reads food cards for the gathering, and learns that the finished trail belongs to everyone who contributed—not to the mascot alone.",
     "grammar": "Read place and food nouns in short notices; combine location, time, and action information in a two-line community message."
   },
   {
@@ -11418,6 +11438,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Making Meaning",
     "title": "Who Is Here?",
     "theme": "personal pronouns, demonstratives, participants, and reference",
+    "story": "During a final map test, readers keep confusing who a card refers to. Little Bear rebuilds the participant board so ‘I,’ ‘you,’ ‘we,’ ‘they,’ ‘this,’ and ‘those’ can be tracked across short passages.",
     "grammar": "Recognize personal and emphatic pronouns; track animate/inanimate and singular/plural demonstratives; avoid mapping English pronouns one-to-one without verification."
   },
   {
@@ -11426,6 +11447,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Making Meaning",
     "title": "Questions at the Crossroads",
     "theme": "question words, polarity questions, answers, and information gaps",
+    "story": "Test readers reach crossroads and cannot tell what each sign is asking. Little Bear turns question words into visible tools: who, what, which, where, when, why, how, how many, and yes/no.",
     "grammar": "Recognize interrogative words and the polarity question indicator; match question type to an answer type; construct only verified question forms."
   },
   {
@@ -11434,6 +11456,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Making Meaning",
     "title": "No, Yes, And, But",
     "theme": "negation, conjunctions, conversational particles, degree, and sequence",
+    "story": "The trail’s test passage is made of correct words but poor connections. Little Bear adds the small words that accept, refuse, contrast, join, limit, and sequence ideas until the passage reads clearly.",
     "grammar": "Read negators, conjunctions, adverbs, and discourse particles; join two verified statements; distinguish sentence meaning from isolated word meaning."
   },
   {
@@ -11442,6 +11465,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Making Meaning",
     "title": "Words That Change the Action",
     "theme": "preverbs, tense/aspect markers, manner, and verb-family awareness",
+    "story": "One final set of action cards changes meaning when a small element is added before the verb. Little Bear experiments with written combinations, but the game permits only combinations approved in the language database.",
     "grammar": "Recognize preverbs and tense/relative markers; compare VAI, VII, VTA, VTI, and inverse labels; do not let players freely generate unattested forms."
   },
   {
@@ -11450,6 +11474,7 @@ window.CREE_CHAPTERS = [
     "actTitle": "Making Meaning",
     "title": "The Trail Opens",
     "theme": "integration, reading short notices, and composing original basic statements",
+    "story": "The community walks the finished trail. Little Bear does not give a speech; the player demonstrates learning by reading signs, correcting statements, and arranging approved word and statement tiles into a short passage for the final board. The last image shows many contributors beside the trail.",
     "grammar": "Integrate noun phrases, VAI/VII statements, questions, negation, time/location words, and conjunctions into a verified five-to-eight-statement text."
   }
 ];
