@@ -1,10 +1,10 @@
 # Little Bear: Words of Home
 
-A playable browser-first vertical slice for a silent, no-typing Plains Cree reading game. The game uses a 240×160 logical canvas—the Game Boy Advance screen size—and keeps curriculum data separate from the rendering and interaction code so the finished design can later be ported to a GBA-compatible engine.
+A playable browser-first vertical slice for a silent, no-typing Plains Cree reading game. This second visual build uses a high-detail 768×512 production canvas with the same 3:2 aspect ratio as the Game Boy Advance. Curriculum data, scene state, controls, collision and rendering remain separate so the finished design can later be retiled and ported to a GBA-compatible engine.
 
 ## What is playable
 
-- Explore an original parkland learning-centre map as a natural four-legged bear cub.
+- Explore a fully illustrated original parkland learning-centre map as a natural four-legged bear cub with directional walk art.
 - Find six visual signs: `maskwa`, `mîtos`, `asiniy`, `nîpiy`, `mînis`, and `kinosêw`.
 - See Cree first, with English support on early encounters and an always-available reveal on later encounters.
 - Complete a five-round picture-recognition check without typing, audio, or speech.
@@ -62,30 +62,34 @@ See `LANGUAGE_REVIEW.md` for the release checklist.
 
 | Browser system | GBA counterpart |
 |---|---|
-| 240×160 canvas | Native Mode 0/1 screen |
-| `drawWorld` tile-like layers | Background tilemaps and palettes |
-| Bear and vocabulary drawings | 4bpp OBJ sprites |
+| 768×512 high-detail 3:2 canvas | Retiled 240×160 Mode 0/1 screen |
+| Illustrated scrolling map | Background tilemaps and palettes |
+| Directional bear and sign sheets | 4bpp OBJ sprites |
 | DOM word cards and menus | Tile-based UI layer |
 | `lexicon-data.js` | Generated C structs / lookup tables |
 | Keyboard, touch, gamepad actions | GBA key bitmask |
 | `localStorage` save | SRAM or Flash save block |
 | Mode string state machine | Scene enum and update/draw functions |
 
-Before porting, replace canvas-drawn temporary sprites with reviewed sprite sheets, quantize assets to GBA palettes, convert the map to tiles, and export only the approved curriculum subset into ROM tables.
+Before porting, quantize the production art to GBA palettes, convert the illustrated map to reusable tiles, reduce the sprite sheets to hardware-safe OBJ sizes, and export only the approved curriculum subset into ROM tables.
 
 ## Project structure
 
 ```text
 web-game/
 ├── assets/little-bear-hybrid.png
+├── assets/parkland-hub-v2.png
+├── assets/bear-sprites-v2.png
+├── assets/word-signs-v2.png
 ├── css/game.css
 ├── js/game.js
 ├── js/lexicon-data.js
+├── preview-gameplay-v2.png
 ├── scripts/generate-lexicon.mjs
+├── scripts/render_preview.py
 ├── LANGUAGE_REVIEW.md
 ├── README.md
 └── index.html
 ```
 
 `scripts/generate-lexicon.mjs` regenerates the browser data from the project story map. It is a build helper, not needed to play the packaged game.
-

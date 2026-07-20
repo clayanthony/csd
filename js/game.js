@@ -48,9 +48,16 @@
     buttonB: document.querySelector("#button-b")
   };
 
-  const SAVE_KEY = "little-bear-words-of-home-demo-v1";
-  const WORLD = { width: 480, height: 320 };
-  const VIEW = { width: 240, height: 160 };
+  const assets = {
+    map: new Image(),
+    bear: new Image(),
+    signs: new Image()
+  };
+  let assetsReady = false;
+
+  const SAVE_KEY = "little-bear-words-of-home-demo-v2";
+  const WORLD = { width: 1536, height: 1024 };
+  const VIEW = { width: 768, height: 512 };
   const DEMO_FORMS = ["maskwa", "mîtos", "asiniy", "nîpiy", "mînis", "kinosêw"];
   const ICONS = {
     maskwa: "bear",
@@ -60,19 +67,20 @@
     "mînis": "berry",
     "kinosêw": "fish"
   };
+  const ICON_INDEX = { bear: 0, tree: 1, rock: 2, leaf: 3, berry: 4, fish: 5 };
   const HOTSPOTS = [
-    { cree: "maskwa", x: 224, y: 209, sign: true },
-    { cree: "mîtos", x: 91, y: 106, sign: true },
-    { cree: "mînis", x: 246, y: 91, sign: true },
-    { cree: "kinosêw", x: 340, y: 158, sign: true },
-    { cree: "nîpiy", x: 85, y: 219, sign: true },
-    { cree: "asiniy", x: 145, y: 268, sign: true }
+    { cree: "maskwa", x: 762, y: 575 },
+    { cree: "mîtos", x: 600, y: 238 },
+    { cree: "mînis", x: 946, y: 338 },
+    { cree: "kinosêw", x: 1090, y: 445 },
+    { cree: "nîpiy", x: 322, y: 714 },
+    { cree: "asiniy", x: 662, y: 870 }
   ];
   const DEMO_WORDS = DEMO_FORMS.map((form) => window.CREE_LEXICON.find((entry) => entry.cree === form));
   const keys = new Set();
 
   const defaultState = () => ({
-    player: { x: 226, y: 247, direction: "up", step: 0 },
+    player: { x: 760, y: 674, direction: "up", step: 0 },
     exposures: {},
     correct: 0,
     demoComplete: false,
@@ -89,7 +97,7 @@
   let challengeAnswered = false;
   let challengeSelection = 0;
   let currentChoices = [];
-  let camera = { x: 106, y: 160 };
+  let camera = { x: 376, y: 420 };
   let lastTime = performance.now();
   let toastTimer = 0;
   let gamepadPrevious = [];
@@ -180,7 +188,7 @@
         nearestDistance = distance;
       }
     }
-    return nearestDistance <= 27 ? nearest : null;
+    return nearestDistance <= 110 ? nearest : null;
   }
 
   function interact() {
@@ -205,7 +213,7 @@
     ui.creeWord.textContent = entry.cree;
     ui.englishWord.textContent = entry.english;
     ui.exposureLabel.textContent = exposureName(state.exposures[form]);
-    drawVocabularyIcon(ui.wordIcon.getContext("2d"), ICONS[form], 44, 44);
+    drawVocabularyIcon(ui.wordIcon.getContext("2d"), ICONS[form], 112, 112);
     renderWordTranslation();
     setMode("word");
     saveState();
@@ -261,13 +269,13 @@
       button.setAttribute("aria-label", `Picture choice ${index + 1}`);
       button.dataset.index = String(index);
       const icon = document.createElement("canvas");
-      icon.width = 48;
-      icon.height = 48;
+      icon.width = 144;
+      icon.height = 144;
       icon.setAttribute("aria-hidden", "true");
       button.append(icon);
       button.addEventListener("click", () => answerChallenge(index));
       ui.choices.append(button);
-      drawVocabularyIcon(icon.getContext("2d"), ICONS[word.cree], 48, 48);
+      drawVocabularyIcon(icon.getContext("2d"), ICONS[word.cree], 144, 144);
     });
     updateChallengeSelection();
   }
@@ -421,7 +429,7 @@
       dy *= Math.SQRT1_2;
     }
     if (dx || dy) {
-      const speed = 56;
+      const speed = 180;
       const proposedX = state.player.x + dx * speed * dt;
       const proposedY = state.player.y + dy * speed * dt;
       if (!blocked(proposedX, state.player.y)) state.player.x = proposedX;
@@ -436,10 +444,10 @@
   }
 
   function blocked(x, y) {
-    if (x < 14 || y < 34 || x > WORLD.width - 14 || y > WORLD.height - 12) return true;
-    if (x > 34 && x < 164 && y > 43 && y < 123) return true;
-    const creekEdge = 382 + Math.sin(y / 24) * 10;
-    if (x > creekEdge && !(y > 138 && y < 181)) return true;
+    if (x < 42 || y < 72 || x > WORLD.width - 42 || y > WORLD.height - 38) return true;
+    if (x > 116 && x < 500 && y < 230) return true;
+    const creekLeft = 1190 + Math.sin((y - 90) / 115) * 85;
+    if (x > creekLeft && x < 1465 && !(y > 340 && y < 485)) return true;
     return false;
   }
 
@@ -448,56 +456,35 @@
     ctx.save();
     ctx.translate(-Math.round(camera.x), -Math.round(camera.y));
     drawWorld();
+    drawSceneEntities();
     drawHotspots();
-    drawPlayer();
     ctx.restore();
   }
 
-  function drawWorld() {
-    ctx.fillStyle = "#66864d";
-    ctx.fillRect(0, 0, WORLD.width, WORLD.height);
-
-    for (let y = 8; y < WORLD.height; y += 16) {
-      for (let x = (y / 16) % 2 ? 8 : 2; x < WORLD.width; x += 19) {
-        const tone = ((x * 13 + y * 7) % 4);
-        ctx.fillStyle = ["#5d7f48", "#708f52", "#547642", "#789256"][tone];
-        ctx.fillRect(x, y, tone % 2 ? 2 : 1, 2);
+  function drawSceneEntities() {
+    const entities = HOTSPOTS.map((hotspot) => ({ type: "sign", y: hotspot.y, hotspot }));
+    entities.push({ type: "player", y: state.player.y });
+    entities.sort((a, b) => a.y - b.y);
+    for (const entity of entities) {
+      if (entity.type === "player") drawPlayer();
+      else {
+        const hotspot = entity.hotspot;
+        drawSign(hotspot.x, hotspot.y, ICONS[hotspot.cree], (state.exposures[hotspot.cree] || 0) > 0);
       }
     }
+  }
 
-    drawPath([[203, 320], [205, 245], [221, 207], [247, 169], [270, 117]], 34);
-    drawPath([[220, 211], [163, 217], [109, 226], [63, 259]], 25);
-    drawPath([[236, 197], [288, 180], [342, 164], [399, 160]], 23);
-    drawPath([[205, 237], [163, 260], [129, 286]], 22);
-    drawPath([[209, 202], [174, 167], [133, 133], [95, 109]], 20);
-
-    drawCreek();
-    drawBridge(372, 157);
-    drawBuilding(46, 49);
-
-    drawTree(24, 50, 1.1);
-    drawTree(180, 42, .9);
-    drawTree(93, 90, 1.15);
-    drawTree(294, 51, .95);
-    drawTree(335, 75, .78);
-    drawTree(60, 185, .82);
-    drawTree(40, 285, .95);
-    drawTree(284, 275, .92);
-    drawTree(329, 239, .8);
-    drawTree(447, 91, .9);
-    drawTree(454, 249, 1.05);
-
-    drawBerryBush(246, 82);
-    drawBerryBush(269, 98);
-    drawBerryBush(302, 115);
-    drawRock(145, 266, 1.25);
-    drawRock(168, 281, .7);
-    drawRock(319, 202, .55);
-    drawLeafCluster(76, 217);
-    drawLeafCluster(99, 231);
-
-    drawFence(170, 68, 88);
-    drawDock(399, 213);
+  function drawWorld() {
+    if (assetsReady) {
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(assets.map, 0, 0, WORLD.width, WORLD.height);
+      return;
+    }
+    const fallback = ctx.createLinearGradient(0, 0, WORLD.width, WORLD.height);
+    fallback.addColorStop(0, "#234837");
+    fallback.addColorStop(1, "#8b793e");
+    ctx.fillStyle = fallback;
+    ctx.fillRect(0, 0, WORLD.width, WORLD.height);
   }
 
   function drawPath(points, width) {
@@ -697,78 +684,100 @@
   }
 
   function drawHotspots() {
-    for (const hotspot of HOTSPOTS) {
-      drawSign(hotspot.x, hotspot.y, ICONS[hotspot.cree], (state.exposures[hotspot.cree] || 0) > 0);
-    }
     const nearest = nearestHotspot();
     if (mode === "play" && nearest) {
-      const pulse = Math.round(Math.sin(performance.now() / 170) * 2);
-      ctx.fillStyle = "#fff4cf";
-      ctx.fillRect(nearest.x - 9, nearest.y - 36 + pulse, 18, 9);
+      const pulse = Math.round(Math.sin(performance.now() / 170) * 7);
+      const markerY = nearest.y - 138 + pulse;
+      ctx.fillStyle = "rgba(14, 29, 22, .55)";
+      ctx.beginPath();
+      ctx.moveTo(nearest.x - 24, markerY - 2);
+      ctx.lineTo(nearest.x + 24, markerY - 2);
+      ctx.lineTo(nearest.x, markerY + 27);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#f5bd2f";
+      ctx.beginPath();
+      ctx.moveTo(nearest.x - 20, markerY - 6);
+      ctx.lineTo(nearest.x + 20, markerY - 6);
+      ctx.lineTo(nearest.x, markerY + 19);
+      ctx.closePath();
+      ctx.fill();
       ctx.fillStyle = "#17332b";
-      ctx.fillRect(nearest.x - 7, nearest.y - 34 + pulse, 14, 5);
-      ctx.fillStyle = "#f7d668";
-      ctx.font = "bold 6px monospace";
+      ctx.font = "900 18px monospace";
       ctx.textAlign = "center";
-      ctx.fillText("A", nearest.x, nearest.y - 29 + pulse);
+      ctx.fillText("A", nearest.x, markerY + 4);
     }
   }
 
   function drawSign(x, y, icon, seen) {
-    ctx.fillStyle = "rgba(30, 43, 30, .24)";
-    blob(x + 1, y + 11, 11, 4);
-    ctx.fillStyle = "#5d3f28";
-    ctx.fillRect(x - 2, y - 9, 4, 20);
-    ctx.fillStyle = seen ? "#e4bc51" : "#d8c797";
-    ctx.fillRect(x - 11, y - 22, 22, 16);
-    ctx.fillStyle = "#3d3424";
-    ctx.fillRect(x - 10, y - 21, 20, 2);
-    ctx.fillRect(x - 10, y - 8, 20, 2);
-    const temp = document.createElement("canvas");
-    temp.width = 16;
-    temp.height = 12;
-    drawVocabularyIcon(temp.getContext("2d"), icon, 16, 12, true);
-    ctx.drawImage(temp, x - 8, y - 19);
+    if (!assetsReady) return;
+    const index = ICON_INDEX[icon];
+    const sourceWidth = assets.signs.naturalWidth / 3;
+    const sourceHeight = assets.signs.naturalHeight / 2;
+    const sourceX = (index % 3) * sourceWidth;
+    const sourceY = Math.floor(index / 3) * sourceHeight;
+    const size = 178;
+    ctx.fillStyle = "rgba(19, 29, 20, .28)";
+    ctx.beginPath();
+    ctx.ellipse(x, y + 8, 45, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.drawImage(assets.signs, sourceX, sourceY, sourceWidth, sourceHeight, x - size / 2, y - size + 24, size, size);
     if (seen) {
-      ctx.fillStyle = "#fff4cf";
-      ctx.fillRect(x + 7, y - 25, 5, 5);
-      ctx.fillStyle = "#2d6b50";
-      ctx.fillRect(x + 8, y - 24, 3, 3);
+      ctx.fillStyle = "#f7d668";
+      ctx.beginPath();
+      ctx.arc(x + 53, y - 102, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#17332b";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(x + 46, y - 102);
+      ctx.lineTo(x + 51, y - 96);
+      ctx.lineTo(x + 61, y - 108);
+      ctx.stroke();
     }
   }
 
   function drawPlayer() {
     const { x, y, direction, step } = state.player;
-    const bob = Math.abs(Math.sin(step)) * 1.2;
-    ctx.save();
-    ctx.translate(Math.round(x), Math.round(y - bob));
-    if (direction === "left") ctx.scale(-1, 1);
-    ctx.fillStyle = "rgba(17, 29, 23, .32)";
-    blob(0, 8 + bob, 13, 4);
-    ctx.fillStyle = "#151713";
-    blob(-2, -1, 12, 8);
-    blob(9, -5, 7, 7);
-    ctx.fillStyle = "#0b0d0b";
-    blob(6, -11, 3, 3);
-    blob(13, -11, 3, 3);
-    ctx.fillStyle = "#242820";
-    blob(14, -3, 4, 3);
-    ctx.fillStyle = "#0b0d0b";
-    ctx.fillRect(16, -4, 2, 2);
-    ctx.fillRect(-9, 4, 4, 8);
-    ctx.fillRect(4, 4, 4, 8);
-    ctx.fillStyle = "#287d78";
-    ctx.fillRect(-4, -7, 8, 10);
-    ctx.fillStyle = "#185c59";
-    ctx.fillRect(-6, -5, 2, 10);
-    ctx.fillStyle = "#d7aa37";
-    ctx.fillRect(-2, -2, 2, 2);
-    ctx.restore();
+    if (!assetsReady) return;
+    const directionIndex = { down: 0, right: 1, up: 2, left: 3 }[direction];
+    const moving = keys.size > 0 && mode === "play";
+    const frame = moving ? Math.floor(step) % 2 : 0;
+    const sourceWidth = assets.bear.naturalWidth / 4;
+    const sourceHeight = assets.bear.naturalHeight / 2;
+    const sourceX = directionIndex * sourceWidth;
+    const sourceY = frame * sourceHeight;
+    const size = 190;
+    const bob = moving ? Math.abs(Math.sin(step * Math.PI)) * 3 : 0;
+    ctx.fillStyle = "rgba(11, 21, 16, .34)";
+    ctx.beginPath();
+    ctx.ellipse(x, y + 6, 48, 16, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.drawImage(assets.bear, sourceX, sourceY, sourceWidth, sourceHeight, x - size / 2, y - size + 35 - bob, size, size);
   }
 
   function drawVocabularyIcon(iconCtx, icon, width, height, compact = false) {
     iconCtx.clearRect(0, 0, width, height);
     iconCtx.imageSmoothingEnabled = false;
+    if (assetsReady) {
+      const index = ICON_INDEX[icon];
+      const sourceWidth = assets.signs.naturalWidth / 3;
+      const sourceHeight = assets.signs.naturalHeight / 2;
+      iconCtx.fillStyle = compact ? "transparent" : "#d8c98d";
+      if (!compact) iconCtx.fillRect(0, 0, width, height);
+      iconCtx.drawImage(
+        assets.signs,
+        (index % 3) * sourceWidth,
+        Math.floor(index / 3) * sourceHeight,
+        sourceWidth,
+        sourceHeight,
+        0,
+        0,
+        width,
+        height
+      );
+      return;
+    }
     const sx = width / 48;
     const sy = height / 48;
     iconCtx.save();
@@ -821,6 +830,33 @@
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
+  }
+
+  function loadImage(image, source) {
+    return new Promise((resolve, reject) => {
+      image.addEventListener("load", resolve, { once: true });
+      image.addEventListener("error", reject, { once: true });
+      image.src = source;
+    });
+  }
+
+  function loadGameAssets() {
+    ui.start.disabled = true;
+    ui.continue.disabled = true;
+    ui.start.textContent = "LOADING TRAIL…";
+    return Promise.all([
+      loadImage(assets.map, "assets/parkland-hub-v2.png"),
+      loadImage(assets.bear, "assets/bear-sprites-v2.png"),
+      loadImage(assets.signs, "assets/word-signs-v2.png")
+    ]).then(() => {
+      assetsReady = true;
+      ui.start.disabled = false;
+      ui.continue.disabled = false;
+      ui.start.textContent = "BEGIN TRAIL";
+    }).catch(() => {
+      ui.start.textContent = "ART COULD NOT LOAD";
+      ui.start.title = "Reload the page or run the game from a local web server.";
+    });
   }
 
   function directionFromKey(key) {
@@ -951,5 +987,6 @@
 
   ui.continue.classList.toggle("hidden", !hasSave());
   setMode("title");
+  loadGameAssets();
   requestAnimationFrame(loop);
 })();

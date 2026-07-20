@@ -57,10 +57,12 @@ button {
 .game-frame {
   aspect-ratio: 3 / 2;
   background: #1a3d32;
-  border: 5px solid #0a1814;
+  border: 8px solid #14261c;
   box-shadow:
-    0 0 0 3px #4b6b4b,
-    0 0 0 7px #12251f,
+    inset 0 0 0 3px #6e7f46,
+    0 0 0 3px #9a7333,
+    0 0 0 8px #243c2b,
+    0 0 0 11px #0a1814,
     0 22px 60px rgba(0, 0, 0, .46);
   isolation: isolate;
   overflow: hidden;
@@ -82,8 +84,8 @@ button {
     0deg,
     transparent 0,
     transparent 3px,
-    rgba(0, 12, 8, .075) 3px,
-    rgba(0, 12, 8, .075) 4px
+    rgba(0, 12, 8, .035) 3px,
+    rgba(0, 12, 8, .035) 4px
   );
   inset: 0;
   pointer-events: none;
@@ -93,13 +95,14 @@ button {
 
 .hud {
   align-items: center;
-  background: linear-gradient(90deg, rgba(13, 37, 29, .95), rgba(13, 37, 29, .73));
-  border-bottom: 2px solid rgba(247, 214, 104, .85);
+  background: linear-gradient(90deg, rgba(13, 37, 29, .96), rgba(13, 37, 29, .86));
+  border: 2px solid rgba(247, 214, 104, .88);
+  box-shadow: 3px 3px 0 rgba(5, 18, 13, .65);
   display: flex;
-  inset: 0 0 auto;
+  inset: 2.2% 2.2% auto;
   justify-content: space-between;
-  min-height: 15%;
-  padding: 1.2% 2%;
+  min-height: 11.5%;
+  padding: .8% 1.2%;
   pointer-events: none;
   position: absolute;
   z-index: 5;
@@ -243,12 +246,15 @@ kbd {
 
 .modal {
   background: linear-gradient(135deg, rgba(246, 231, 184, .98), rgba(220, 199, 142, .98));
-  border: 3px solid var(--ink);
-  box-shadow: 5px 5px 0 rgba(8, 20, 17, .75);
+  border: 5px solid #18372a;
+  box-shadow:
+    inset 0 0 0 3px #c99a32,
+    inset 0 0 0 6px #f6e2a9,
+    7px 7px 0 rgba(8, 20, 17, .78);
   color: var(--ink);
-  inset: auto 3% 4%;
+  inset: auto 2.2% 2.2%;
   max-height: 87%;
-  padding: 2.2%;
+  padding: 2.4% 2.6%;
   position: absolute;
   z-index: 11;
 }
@@ -257,7 +263,8 @@ kbd {
   align-items: center;
   display: grid;
   gap: 2.2%;
-  grid-template-columns: 19% 1fr auto;
+  grid-template-columns: 22% 1fr auto;
+  min-height: 31%;
 }
 
 .portrait-panel {
@@ -268,10 +275,11 @@ kbd {
 }
 
 .portrait-panel canvas {
-  background: #d6c485;
-  border: 2px solid var(--ink);
+  background: #b8c388;
+  border: 4px solid #17332b;
+  box-shadow: inset 0 0 0 3px #d2a83d;
   image-rendering: pixelated;
-  max-width: 66px;
+  max-width: 122px;
   width: 100%;
 }
 
@@ -283,7 +291,7 @@ kbd {
 
 .cree-word {
   color: #163e36;
-  font-size: clamp(21px, 4.4vw, 50px);
+  font-size: clamp(24px, 4.8vw, 56px);
   font-weight: 900;
   letter-spacing: -.05em;
   line-height: .9;
@@ -293,7 +301,7 @@ kbd {
 .english-word {
   color: #8c3b31;
   font-family: system-ui, sans-serif;
-  font-size: clamp(12px, 2vw, 22px);
+  font-size: clamp(13px, 2.1vw, 24px);
   font-weight: 800;
   line-height: 1;
   margin: .35em 0 0;
@@ -378,9 +386,9 @@ kbd {
 }
 
 .choice-button canvas {
-  height: min(9vw, 70px);
+  height: min(11vw, 118px);
   image-rendering: pixelated;
-  width: min(9vw, 70px);
+  width: min(11vw, 118px);
 }
 
 .choice-button.correct {
