@@ -10,7 +10,9 @@ The web build uses a detailed 768×512 production canvas with the same 3:2 aspec
 - **25 chapters:** Five chapters per act, using the curriculum titles, themes and progression.
 - **125 missions:** Five missions per chapter and exactly six new words per mission.
 - **750 curriculum records:** Each record keeps its own ID, Cree form, English support, part of speech, grammatical class, chapter and mission assignment.
-- **Physical exploration:** Little Bear finds six wooden word signs in every mission.
+- **Expanded semantic worlds:** Each act is a 3072×2048 scrolling world—four times the explorable area of the earlier map build—with homes, water, forest, garden, rock, school, workshop, play, care and gathering landmarks.
+- **750 authored placements:** Every curriculum record has its own deterministic coordinate. Concrete words appear beside a matching visible landmark; conversational and grammatical forms are distributed through neutral clearings.
+- **Physical exploration:** Little Bear finds six wooden word signs in every mission, guided by a non-verbal golden compass toward the nearest unseen sign.
 - **Two-way recognition:** Checks alternate between Cree→English and English→Cree choices.
 - **Spaced cumulative checks:** Six-word mission checks lead to 30-word chapter pools and 150-word act pools.
 - **Full progression:** Mission, chapter, act and final completion states are saved and replayable.
@@ -52,7 +54,7 @@ No text entry is used anywhere.
 ## Learning loop
 
 1. A mission briefing introduces its place in the act and chapter without exposing unseen answers.
-2. Little Bear explores six numbered word signs.
+2. Little Bear follows the golden compass to six numbered word signs placed beside meaning-related landmarks.
 3. Opening a sign shows the Cree form first, with English support available at all times.
 4. First and second encounters show English by default; later encounters encourage recall but never remove support.
 5. The mission check asks six two-way recognition questions.
@@ -67,6 +69,14 @@ English glosses are independent meaning cues, not claims of word-for-word senten
 This build teaches every selected word and the mechanics of reading statement-like sequences, but it deliberately does **not** invent publishable Cree sentences. Chapter 25 retains its curriculum role; speaker-approved sentences can be added to the same campaign engine after community review.
 
 Every form, gloss, grammatical class, picture association and future sentence must be independently approved by authorized Muscowpetung/Plains Cree speakers before public release. See `LANGUAGE_REVIEW.md`.
+
+## Semantic placement system
+
+`js/placement-data.js` is the runtime manifest for all 750 coordinates. It is generated reproducibly by `scripts/generate-placements.mjs` from whole-word English meaning rules, part-of-speech handling and hand-authored landmark anchors. The generator prevents exact coordinate reuse within an act and enforces 190 world pixels of separation among the six signs in every mission.
+
+`PLACEMENT_AUDIT.md` lists every curriculum ID, Cree form, English support, act, chapter, mission, semantic zone, visible landmark and coordinate. Run `node scripts/validate-placements.mjs` to verify all records, bounds, mission sizes, duplicate coordinates, spacing and representative meaning associations.
+
+The placement is intentionally stable across saves and replays. “Random” neutral words therefore receive seeded, varied locations rather than changing positions mid-save.
 
 ## Rights boundary
 
@@ -95,11 +105,11 @@ The GBA conversion still requires palette quantization, map tiling, sprite-size 
 ```text
 web-game/
 ├── assets/
-│   ├── act-1-home-v3.png
-│   ├── act-2-land-v3.png
-│   ├── act-3-time-v3.png
-│   ├── act-4-community-v3.png
-│   ├── act-5-meaning-v3.png
+│   ├── act-1-home-expanded-v4.png
+│   ├── act-2-land-expanded-v4.png
+│   ├── act-3-time-expanded-v4.png
+│   ├── act-4-community-expanded-v4.png
+│   ├── act-5-meaning-expanded-v4.png
 │   ├── bear-sprites-v2.png
 │   ├── blank-sign-v3.png
 │   ├── fonts/
@@ -110,13 +120,14 @@ web-game/
 ├── css/game.css
 ├── js/game-v3.js
 ├── js/lexicon-data.js
-├── preview-five-acts-v3.jpg
-├── preview-gameplay-v3.jpg
-├── scripts/generate-lexicon.mjs
-├── scripts/render_campaign_preview.py
+├── js/placement-data.js
+├── scripts/generate-placements.mjs
+├── scripts/validate-placements.mjs
+├── screenshots/semantic-placements/
 ├── LANGUAGE_REVIEW.md
+├── PLACEMENT_AUDIT.md
 ├── README.md
 └── index.html
 ```
 
-`scripts/generate-lexicon.mjs` regenerates browser curriculum data from the project story map. `scripts/render_campaign_preview.py` produces deterministic previews from the same map and sprite assets used by the runtime.
+`scripts/generate-placements.mjs` regenerates the complete semantic coordinate manifest and human-readable audit from `js/lexicon-data.js`. `scripts/validate-placements.mjs` verifies the manifest before packaging.

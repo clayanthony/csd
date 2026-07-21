@@ -21,26 +21,20 @@
     "ending-screen", "ending-map-button", "toast", "menu-button", "button-a", "button-b"
   ].map((id) => [camel(id), document.querySelector(`#${id}`)]));
 
-  const SAVE_KEY = "little-bear-words-of-home-complete-v3";
+  const SAVE_KEY = "little-bear-words-of-home-semantic-worlds-v5";
   const VIEW = { width: 768, height: 512 };
-  const WORLD = { width: 1536, height: 1024 };
+  const WORLD = window.CREE_PLACEMENT_META?.world || { width: 3072, height: 2048 };
   const WORDS = window.CREE_LEXICON;
   const CHAPTERS = window.CREE_CHAPTERS;
+  const PLACEMENTS = window.CREE_PLACEMENTS || {};
   const ACT_NAMES = ["Words Close to Home", "Words on the Land", "Words Through Time", "Words With Others", "Making Meaning"];
   const KNOWN_ICONS = { maskwa: 0, "mîtos": 1, asiniy: 2, "nîpiy": 3, "mînis": 4, "kinosêw": 5 };
   const MAP_SOURCES = [
-    "assets/act-1-home-v3.png",
-    "assets/act-2-land-v3.png",
-    "assets/act-3-time-v3.png",
-    "assets/act-4-community-v3.png",
-    "assets/act-5-meaning-v3.png"
-  ];
-  const HOTSPOTS_BY_ACT = [
-    [[410, 640], [690, 585], [1020, 570], [1160, 720], [900, 850], [520, 850]],
-    [[762, 575], [600, 238], [946, 338], [1090, 445], [322, 714], [662, 870]],
-    [[350, 330], [300, 575], [585, 745], [880, 860], [1130, 720], [1120, 300]],
-    [[380, 520], [340, 720], [620, 870], [900, 740], [1110, 850], [1020, 430]],
-    [[270, 560], [560, 330], [800, 450], [1120, 520], [940, 800], [530, 800]]
+    "assets/act-1-home-expanded-v4.png",
+    "assets/act-2-land-expanded-v4.png",
+    "assets/act-3-time-expanded-v4.png",
+    "assets/act-4-community-expanded-v4.png",
+    "assets/act-5-meaning-expanded-v4.png"
   ];
 
   const assets = {
@@ -123,7 +117,11 @@
   }
 
   function currentHotspots() {
-    return HOTSPOTS_BY_ACT[actForChapter() - 1].map(([x, y], slot) => ({ x, y, slot }));
+    return currentMissionWords().map((word, slot) => {
+      const placement = PLACEMENTS[word.id];
+      if (!placement) throw new Error(`Missing semantic placement for ${word.id}.`);
+      return { ...placement, slot, wordId: word.id };
+    });
   }
 
   function missionTitle(chapter = state.chapter, mission = state.mission) {
@@ -205,7 +203,12 @@
       state.missionSeen = [];
     }
     const first = currentHotspots()[0];
-    state.player = { x: first.x, y: first.y + 96, direction: "up", step: 0 };
+    state.player = {
+      x: clamp(first.x, 42, WORLD.width - 42),
+      y: clamp(first.y + 96, 72, WORLD.height - 38),
+      direction: "up",
+      step: 0
+    };
     camera.x = clamp(state.player.x - VIEW.width / 2, 0, WORLD.width - VIEW.width);
     camera.y = clamp(state.player.y - VIEW.height / 2, 0, WORLD.height - VIEW.height);
     state.pendingAdvance = null;
@@ -232,7 +235,7 @@
   function startMissionPlay() {
     setMode("play");
     canvas.focus();
-    showToast("Explore the six wooden signs. Press A when the marker appears.");
+    showToast("Follow the golden compass to six meaning-matched signs.");
   }
 
   function missionSeenCount() {
@@ -289,7 +292,13 @@
     ui.creeWord.textContent = word.cree;
     ui.englishWord.textContent = word.english;
     ui.exposureLabel.textContent = exposureName(state.exposures[word.id]);
-    ui.wordMeta.textContent = [word.partOfSpeech, word.grammaticalClass, word.animacy].filter(Boolean).join(" · ");
+    const placement = PLACEMENTS[word.id];
+    ui.wordMeta.textContent = [
+      word.partOfSpeech,
+      word.grammaticalClass,
+      word.animacy,
+      placement ? `found near ${placement.landmark}` : ""
+    ].filter(Boolean).join(" · ");
     drawWordIcon(ui.wordIcon.getContext("2d"), word, 112, 112);
     renderWordTranslation();
     saveState();
@@ -692,7 +701,7 @@
       dy *= Math.SQRT1_2;
     }
     if (dx || dy) {
-      const speed = 180;
+      const speed = 260;
       state.player.x = clamp(state.player.x + dx * speed * dt, 42, WORLD.width - 42);
       state.player.y = clamp(state.player.y + dy * speed * dt, 72, WORLD.height - 38);
       state.player.direction = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? "left" : "right") : (dy < 0 ? "up" : "down");
@@ -711,6 +720,51 @@
     drawWorld();
     drawEntities();
     drawInteractionMarker();
+    ctx.restore();
+    drawTrailCompass();
+  }
+
+  function nextUnseenHotspot() {
+    const words = currentMissionWords();
+    const unseen = currentHotspots().filter((hotspot) => !state.missionSeen.includes(words[hotspot.slot]?.id));
+    const pool = unseen.length ? unseen : currentHotspots();
+    return pool.reduce((nearest, hotspot) => {
+      const distance = Math.hypot(state.player.x - hotspot.x, state.player.y - hotspot.y);
+      return !nearest || distance < nearest.distance ? { ...hotspot, distance } : nearest;
+    }, null);
+  }
+
+  function drawTrailCompass() {
+    if (mode !== "play") return;
+    const target = nextUnseenHotspot();
+    if (!target || target.distance < 135) return;
+    const x = VIEW.width - 55;
+    const y = VIEW.height - 55;
+    const angle = Math.atan2(target.y - state.player.y, target.x - state.player.x);
+    ctx.save();
+    ctx.fillStyle = "rgba(18, 45, 37, .92)";
+    ctx.strokeStyle = "#f4d267";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(x, y, 38, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.fillStyle = "#f4b72d";
+    ctx.beginPath();
+    ctx.moveTo(29, 0);
+    ctx.lineTo(-10, -12);
+    ctx.lineTo(-4, 0);
+    ctx.lineTo(-10, 12);
+    ctx.closePath();
+    ctx.fill();
+    ctx.rotate(-angle);
+    ctx.fillStyle = "#fff4cf";
+    ctx.font = '700 13px "Balsamiq Sans"';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(String(target.slot + 1), 0, 1);
     ctx.restore();
   }
 

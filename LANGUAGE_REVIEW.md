@@ -10,6 +10,7 @@ Before a public build, an authorized Muscowpetung/Plains Cree language team shou
 - which forms are suitable for a beginner's active vocabulary;
 - the introduction order and cultural/contextual fit of each word;
 - every picture-to-word association;
+- every word-to-landmark placement in `PLACEMENT_AUDIT.md`, including whether the environmental cue is accurate, locally appropriate, and pedagogically useful;
 - every grammatical note and any future sentence as a complete utterance;
 - community protocols for names, stories, land references, and visual content;
 - contributor credit, approval language, and the process for withdrawing or correcting content.
@@ -34,3 +35,5 @@ Before a public build, an authorized Muscowpetung/Plains Cree language team shou
 | Release ready | Credits, permissions record, version, and correction contact attached |
 
 The current prototype entries should all be treated as **Candidate** until that review occurs.
+
+The semantic zones in the web build are ordinary design associations, not linguistic or cultural claims. They make literal objects easier to encounter (for example, a fish word at water or a tree word at a forest edge) and place abstract forms in neutral clearings. They do not replace speaker review of meaning, context, dialect or land-based teaching practice.
