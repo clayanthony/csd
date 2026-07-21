@@ -10,7 +10,8 @@ Before a public build, an authorized Muscowpetung/Plains Cree language team shou
 - which forms are suitable for a beginner's active vocabulary;
 - the introduction order and cultural/contextual fit of each word;
 - every picture-to-word association;
-- every word-to-landmark placement in `PLACEMENT_AUDIT.md`, including whether the environmental cue is accurate, locally appropriate, and pedagogically useful;
+- every word-to-landmark placement in `PLACEMENT_AUDIT_V6.md`, including whether the environmental cue is accurate, locally appropriate, and pedagogically useful;
+- every word-to-pictogram association in `PICTOGRAM_AUDIT_V6.md`, especially cases where one picture stands in for a broader action or concept;
 - every grammatical note and any future sentence as a complete utterance;
 - community protocols for names, stories, land references, and visual content;
 - contributor credit, approval language, and the process for withdrawing or correcting content.

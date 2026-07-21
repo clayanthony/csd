@@ -4,7 +4,7 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const lexiconSource = fs.readFileSync(path.join(ROOT, "js", "lexicon-data.js"), "utf8");
+const lexiconSource = fs.readFileSync(path.join(ROOT, "js", "lexicon-data-v6.js"), "utf8");
 const sandbox = { window: {} };
 vm.runInNewContext(lexiconSource, sandbox);
 const WORDS = sandbox.window.CREE_LEXICON;
@@ -244,8 +244,8 @@ for (const word of WORDS) {
   byMission.set(key, already);
 }
 
-const output = `(() => {\n  "use strict";\n\n  window.CREE_PLACEMENT_META = Object.freeze(${JSON.stringify({ version: 4, world: WORLD, mapScale: SCALE, total: WORDS.length }, null, 2)});\n  window.CREE_PLACEMENTS = Object.freeze(${JSON.stringify(placements, null, 2)});\n})();\n`;
-fs.writeFileSync(path.join(ROOT, "js", "placement-data.js"), output);
+const output = `(() => {\n  "use strict";\n\n  window.CREE_PLACEMENT_META = Object.freeze(${JSON.stringify({ version: 6, world: WORLD, mapScale: SCALE, total: WORDS.length }, null, 2)});\n  window.CREE_PLACEMENTS = Object.freeze(${JSON.stringify(placements, null, 2)});\n})();\n`;
+fs.writeFileSync(path.join(ROOT, "js", "placement-data-v6.js"), output);
 
 const zoneCounts = {};
 for (const entry of Object.values(placements)) zoneCounts[entry.zone] = (zoneCounts[entry.zone] || 0) + 1;
@@ -253,7 +253,7 @@ const rows = WORDS.map((word) => {
   const placement = placements[word.id];
   return `| ${word.id} | ${word.cree.replaceAll("|", "\\|")} | ${word.english.replaceAll("|", "\\|")} | ${actForChapter(word.chapter)} | ${word.chapter} | ${word.mission} | ${placement.zone} | ${placement.landmark} | ${placement.x}, ${placement.y} |`;
 });
-const audit = `# Semantic Placement Audit\n\nGenerated from the independent 750-record curriculum. Every record has one unique, deterministic world coordinate within its act. Concrete meanings use visible landmark zones; abstract and conversational forms use seeded neutral clearings.\n\n- Records: **${WORDS.length}**\n- Missions: **${byMission.size}**\n- World size: **${WORLD.width} × ${WORLD.height}**\n- Exact duplicate coordinates within an act: **${WORDS.length - usedExact.size}**\n- Minimum within-mission spacing: **${MIN_MISSION_SPACING} world pixels**\n\n## Zone counts\n\n${Object.entries(zoneCounts).sort((a, b) => b[1] - a[1]).map(([zone, count]) => `- ${zone}: ${count}`).join("\n")}\n\n## Complete placement manifest\n\n| ID | Cree form | English support | Act | Chapter | Mission | Zone | Visible landmark | Coordinate |\n|---|---|---|---:|---:|---:|---|---|---|\n${rows.join("\n")}\n`;
-fs.writeFileSync(path.join(ROOT, "PLACEMENT_AUDIT.md"), audit);
+const audit = `# V6 Semantic Placement Audit\n\nGenerated from the curated ${WORDS.length}-record beginner campaign. Every record has one unique, deterministic world coordinate within its act. Concrete meanings use visible landmark zones; abstract and conversational forms use seeded neutral clearings.\n\n- Records: **${WORDS.length}**\n- Missions: **${byMission.size}**\n- World size: **${WORLD.width} × ${WORLD.height}**\n- Exact duplicate coordinates within an act: **${WORDS.length - usedExact.size}**\n- Minimum within-mission spacing: **${MIN_MISSION_SPACING} world pixels**\n\n## Zone counts\n\n${Object.entries(zoneCounts).sort((a, b) => b[1] - a[1]).map(([zone, count]) => `- ${zone}: ${count}`).join("\n")}\n\n## Complete placement manifest\n\n| ID | Cree form | English support | Act | Chapter | Mission | Zone | Visible landmark | Coordinate |\n|---|---|---|---:|---:|---:|---|---|---|\n${rows.join("\n")}\n`;
+fs.writeFileSync(path.join(ROOT, "PLACEMENT_AUDIT_V6.md"), audit);
 
 console.log(JSON.stringify({ records: WORDS.length, missions: byMission.size, uniqueCoordinates: usedExact.size, zoneCounts }, null, 2));
