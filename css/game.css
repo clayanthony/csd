@@ -158,26 +158,9 @@ button {
 }
 
 .hud-actions {
-  align-items: center;
   display: flex;
-  gap: .38em;
+  gap: .55em;
   pointer-events: auto;
-}
-
-.hud-chip {
-  background: rgba(255, 244, 207, .12);
-  border: 1px solid rgba(247, 214, 104, .6);
-  color: #fff4cf;
-  font-size: clamp(6px, .76vw, 9px);
-  font-weight: 800;
-  letter-spacing: .03em;
-  padding: .38em .48em;
-  white-space: nowrap;
-}
-
-#friendship-level {
-  color: #f4d267;
-  letter-spacing: -.06em;
 }
 
 .screen {
@@ -491,7 +474,6 @@ kbd {
 
 .completion-stats {
   display: flex;
-  flex-wrap: wrap;
   font-family: var(--game-font);
   gap: 1em;
   justify-content: center;
@@ -509,69 +491,6 @@ kbd {
   color: #8c3b31;
   display: block;
   font: 900 2em/1 var(--game-font);
-}
-
-.learner-report {
-  inset: 4% 7%;
-  overflow: auto;
-}
-
-.learner-report h3 {
-  color: #173e34;
-  font-size: clamp(11px, 1.7vw, 20px);
-  margin: .8em 0 .4em;
-}
-
-.report-stats {
-  display: grid;
-  gap: .55em;
-  grid-template-columns: repeat(4, 1fr);
-  margin: .8em 0;
-}
-
-.report-stats span {
-  background: rgba(255, 255, 255, .3);
-  border: 2px solid #687252;
-  font-size: clamp(7px, .9vw, 11px);
-  padding: .7em;
-  text-align: center;
-}
-
-.report-stats strong {
-  color: #8c3b31;
-  display: block;
-  font-size: clamp(14px, 2vw, 24px);
-}
-
-.report-hardest-list {
-  display: grid;
-  gap: .4em;
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.report-word,
-.report-empty {
-  background: rgba(255, 255, 255, .28);
-  border: 1px solid #7d835b;
-  display: grid;
-  font-size: clamp(7px, .92vw, 11px);
-  gap: .2em .6em;
-  grid-template-columns: 1fr 1fr auto;
-  margin: 0;
-  padding: .55em;
-}
-
-.report-word strong {
-  color: #17493e;
-}
-
-.report-word small {
-  color: #6c493b;
-}
-
-.report-empty {
-  grid-column: 1 / -1;
-  grid-template-columns: 1fr;
 }
 
 .full-modal {
@@ -715,37 +634,6 @@ kbd {
   font-family: var(--game-font);
   font-size: clamp(7px, 1.05vw, 13px);
   line-height: 1.25;
-}
-
-.mission-theme {
-  margin: .35em 0;
-}
-
-.story-guide {
-  align-items: center;
-  background: rgba(255, 255, 255, .25);
-  border: 2px solid #687252;
-  display: grid;
-  gap: .7em;
-  grid-template-columns: 74px 1fr;
-  margin: .45em auto;
-  max-width: 40em;
-  padding: .3em .6em;
-  text-align: left;
-}
-
-.story-guide canvas {
-  background: linear-gradient(#b8c388, #87965e);
-  border: 2px solid #17332b;
-  height: 70px;
-  image-rendering: pixelated;
-  width: 70px;
-}
-
-.story-guide p:not(.kicker) {
-  font-size: clamp(7px, .95vw, 11px);
-  line-height: 1.22;
-  margin: .25em 0 0;
 }
 
 .mission-word-preview {
@@ -1113,17 +1001,8 @@ kbd {
     gap: 0 1%;
   }
 
-  .report-stats,
-  .report-hardest-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .controls {
     gap: 4px;
-  }
-
-  .hud-chip {
-    display: none;
   }
 
   .system-controls p {

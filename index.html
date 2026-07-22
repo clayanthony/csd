@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#132c28">
-  <title>Little Bear: Words of Home — Focused 300-Word Campaign</title>
+  <title>Little Bear: Words of Home — Complete Campaign</title>
   <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
@@ -20,16 +20,13 @@
             <strong id="objective">Find the six word signs</strong>
           </div>
           <div class="hud-actions">
-            <span class="hud-chip season-chip" id="season-label">SPRING</span>
-            <span class="hud-chip" title="Companion friendship"><span id="companion-label">MOSS</span> <span id="friendship-level">♡♡♡♡♡</span></span>
-            <span class="hud-chip" title="Trail leaves earned">LEAVES <span id="leaf-count">0</span></span>
             <button class="hud-button" id="map-button" type="button" aria-label="Open journey map">MAP</button>
-            <button class="hud-button" id="journal-button" type="button" aria-label="Open word journal">WORDS <span id="seen-count">0/300</span></button>
+            <button class="hud-button" id="journal-button" type="button" aria-label="Open word journal">WORDS <span id="seen-count">0/750</span></button>
           </div>
         </header>
 
         <section class="title-screen screen active" id="title-screen" aria-labelledby="game-title">
-          <img src="assets/act-5-meaning-expanded-v4.png" alt="Pixel-art parkland trails converge at a hilltop reading pavilion">
+          <img src="assets/act-5-meaning-v3.png" alt="Pixel-art parkland trails converge at a hilltop reading pavilion">
           <div class="title-scrim"></div>
           <div class="title-copy">
             <p class="kicker">A CREE-FIRST READING ADVENTURE</p>
@@ -39,7 +36,7 @@
               <button class="primary-button" id="start-button" type="button">BEGIN TRAIL</button>
               <button class="secondary-button hidden" id="continue-button" type="button">CONTINUE</button>
             </div>
-            <small>25 chapters · 50 missions · 300 words · five companions · no typing</small>
+            <small>25 chapters · 125 missions · 750 words · silent play · no typing</small>
           </div>
         </section>
 
@@ -48,13 +45,6 @@
           <h2 id="mission-banner-title">The First Blank Sign</h2>
           <p class="mission-name" id="mission-banner-name">Mission 1 · A Sign with No Words</p>
           <p class="mission-theme" id="mission-banner-theme">Greetings, noticing, and the first things Little Bear can point to.</p>
-          <div class="story-guide">
-            <canvas id="companion-portrait" width="118" height="118" aria-hidden="true"></canvas>
-            <div>
-              <p class="kicker" id="companion-role">MOSS · HOME BUILDER</p>
-              <p id="story-prompt">Moss is getting the home clearing ready. Find the words that help everyone begin together.</p>
-            </div>
-          </div>
           <div class="mission-word-preview" id="mission-word-preview"></div>
           <p class="speaker-note">Explore six word signs. Cree appears first; English support always remains available.</p>
           <button class="primary-button" id="begin-mission-button" type="button"><kbd>A</kbd> BEGIN MISSION</button>
@@ -95,8 +85,6 @@
           <div class="completion-stats">
             <span><strong id="complete-seen">6</strong> words encountered</span>
             <span><strong id="complete-correct">0</strong> correct choices</span>
-            <span><strong id="complete-leaves">+1</strong> trail leaf</span>
-            <span><strong id="complete-friendship">♡</strong> companion friendship</span>
           </div>
           <button class="primary-button" id="keep-exploring-button" type="button">CONTINUE JOURNEY</button>
         </section>
@@ -123,7 +111,7 @@
             </div>
             <div class="mission-grid" id="mission-grid"></div>
           </section>
-          <footer><span id="campaign-total">0 of 300 words encountered</span><span id="campaign-missions">0 of 50 missions complete</span></footer>
+          <footer><span id="campaign-total">0 of 750 words encountered</span><span id="campaign-missions">0 of 125 missions complete</span></footer>
         </section>
 
         <section class="journal modal full-modal hidden" id="journal" aria-modal="true" role="dialog" aria-labelledby="journal-title">
@@ -140,7 +128,7 @@
             <button type="button" id="next-chapter-button">CHAPTER <span class="direction-icon right" aria-hidden="true"></span></button>
           </div>
           <div class="journal-list" id="journal-list"></div>
-          <footer><span id="journal-total">0 of 300 encountered</span><span>Translations are independent meanings, not word-for-word grammar.</span></footer>
+          <footer><span id="journal-total">0 of 750 encountered</span><span>Translations are independent meanings, not word-for-word grammar.</span></footer>
         </section>
 
         <section class="pause-menu modal hidden" id="pause-menu" aria-modal="true" role="dialog" aria-labelledby="pause-title">
@@ -148,34 +136,14 @@
           <h2 id="pause-title">Trail menu</h2>
           <button class="primary-button" id="resume-button" type="button">RESUME</button>
           <button class="secondary-button" id="pause-map-button" type="button">JOURNEY MAP</button>
-          <button class="secondary-button" id="learner-report-button" type="button">LEARNER REPORT</button>
           <button class="secondary-button" id="restart-button" type="button">RESTART JOURNEY</button>
           <p class="small-print">Language forms and final sentence content require community speaker approval before release.</p>
-        </section>
-
-        <section class="learner-report modal full-modal hidden" id="learner-report" aria-modal="true" role="dialog" aria-labelledby="learner-report-title">
-          <header class="journal-header">
-            <div>
-              <p class="kicker">LOCAL LEARNING SUMMARY</p>
-              <h2 id="learner-report-title">Grown-up and playtest report</h2>
-            </div>
-            <button class="close-button" id="learner-report-close-button" type="button" aria-label="Close learner report">×</button>
-          </header>
-          <div class="report-stats">
-            <span><strong id="report-encountered">0/300</strong> words encountered</span>
-            <span><strong id="report-accuracy">—</strong> recognition accuracy</span>
-            <span><strong id="report-review-count">0</strong> words returning soon</span>
-            <span><strong id="report-leaves">0</strong> trail leaves</span>
-          </div>
-          <h3>Words needing another look</h3>
-          <div class="report-hardest-list" id="report-hardest-list"></div>
-          <p class="small-print">This summary stays only in this browser. It is designed for supervised learner testing and does not send personal data anywhere.</p>
         </section>
 
         <section class="restart-confirm modal hidden" id="restart-confirm" aria-modal="true" role="dialog" aria-labelledby="restart-confirm-title">
           <p class="kicker">RESTART JOURNEY?</p>
           <h2 id="restart-confirm-title">Clear every saved word and chapter?</h2>
-          <p>This cannot be undone. Your 300-word journal, friendships, rewards and mission progress will return to the beginning.</p>
+          <p>This cannot be undone. Your 750-word journal, mission progress and act checks will return to the beginning.</p>
           <div class="confirm-actions">
             <button class="secondary-button" id="cancel-restart-button" type="button">KEEP MY JOURNEY</button>
             <button class="danger-button" id="confirm-restart-button" type="button">YES, RESTART</button>
@@ -184,12 +152,12 @@
 
         <section class="ending-screen modal hidden" id="ending-screen" aria-modal="true" role="dialog" aria-labelledby="ending-title">
           <p class="kicker">THE TRAIL OPENS</p>
-          <h2 id="ending-title">All 300 words have a place on the trail.</h2>
-          <p>Little Bear and five companions have completed 50 missions across five acts. Every encountered word remains in the journal and every completed chapter can be replayed.</p>
+          <h2 id="ending-title">All 750 words have a place on the trail.</h2>
+          <p>Little Bear has completed 125 missions across five acts. Every encountered word remains in the journal and every completed chapter can be replayed.</p>
           <div class="completion-stats">
-            <span><strong>300</strong> focused words</span>
+            <span><strong>750</strong> curriculum words</span>
             <span><strong>25</strong> chapters</span>
-            <span><strong>5</strong> companion stories</span>
+            <span><strong>5</strong> act gates</span>
           </div>
           <button class="primary-button" id="ending-map-button" type="button">REVISIT THE TRAIL</button>
         </section>
@@ -216,9 +184,7 @@
     </section>
   </main>
 
-  <script src="js/lexicon-data-v6.js"></script>
-  <script src="js/placement-data-v6.js"></script>
-  <script src="js/word-icon-data-v6.js"></script>
+  <script src="js/lexicon-data.js"></script>
   <script src="js/game-v3.js"></script>
 </body>
 </html>

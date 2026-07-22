@@ -18,48 +18,36 @@
     "next-act-button", "act-progress-label", "chapter-grid", "selected-chapter-label", "selected-chapter-title",
     "selected-chapter-theme", "mission-grid", "campaign-total", "campaign-missions", "pause-menu", "resume-button",
     "pause-map-button", "restart-button", "restart-confirm", "cancel-restart-button", "confirm-restart-button",
-    "ending-screen", "ending-map-button", "toast", "menu-button", "button-a", "button-b", "season-label",
-    "companion-label", "friendship-level", "leaf-count", "companion-portrait", "companion-role", "story-prompt",
-    "complete-leaves", "complete-friendship", "learner-report-button", "learner-report", "learner-report-close-button",
-    "report-encountered", "report-accuracy", "report-review-count", "report-leaves", "report-hardest-list"
+    "ending-screen", "ending-map-button", "toast", "menu-button", "button-a", "button-b"
   ].map((id) => [camel(id), document.querySelector(`#${id}`)]));
 
-  const SAVE_KEY = "little-bear-words-of-home-focused-campaign-v6";
+  const SAVE_KEY = "little-bear-words-of-home-complete-v3";
   const VIEW = { width: 768, height: 512 };
-  const WORLD = window.CREE_PLACEMENT_META?.world || { width: 3072, height: 2048 };
+  const WORLD = { width: 1536, height: 1024 };
   const WORDS = window.CREE_LEXICON;
   const CHAPTERS = window.CREE_CHAPTERS;
-  const PLACEMENTS = window.CREE_PLACEMENTS || {};
-  const WORD_ICONS = window.CREE_WORD_ICONS || {};
-  const CURRICULUM = window.CREE_CURRICULUM_META || { totalWords: WORDS.length, missionsPerChapter: 2, totalMissions: 50 };
-  const TOTAL_WORDS = CURRICULUM.totalWords;
-  const MISSIONS_PER_CHAPTER = CURRICULUM.missionsPerChapter;
-  const TOTAL_MISSIONS = CURRICULUM.totalMissions;
-  const TOTAL_CHAPTERS = CHAPTERS.length;
   const ACT_NAMES = ["Words Close to Home", "Words on the Land", "Words Through Time", "Words With Others", "Making Meaning"];
-  const COMPANIONS = [
-    { name: "Moss", role: "HOME BUILDER", sprite: 0, story: "Moss is preparing the home clearing. Find words that help everyone begin, point, dress, and share food." },
-    { name: "Reed", role: "LAND GUIDE", sprite: 1, story: "Reed knows the paths between forest and water. Find words for animals, plants, weather, and safe travel." },
-    { name: "Tansy", role: "SEASON KEEPER", sprite: 2, story: "Tansy watches the seasons change. Find words for time, counting, movement, and everyday routines." },
-    { name: "Pip", role: "COMMUNITY HELPER", sprite: 3, story: "Pip is helping around the community. Find words for learning, work, feelings, play, and gathering places." },
-    { name: "Ink", role: "STORY READER", sprite: 4, story: "Ink is opening the final reading trail. Find the small words and actions that help a basic thought take shape." }
-  ];
   const KNOWN_ICONS = { maskwa: 0, "mîtos": 1, asiniy: 2, "nîpiy": 3, "mînis": 4, "kinosêw": 5 };
   const MAP_SOURCES = [
-    "assets/act-1-home-expanded-v4.png",
-    "assets/act-2-land-expanded-v4.png",
-    "assets/act-3-time-expanded-v4.png",
-    "assets/act-4-community-expanded-v4.png",
-    "assets/act-5-meaning-expanded-v4.png"
+    "assets/act-1-home-v3.png",
+    "assets/act-2-land-v3.png",
+    "assets/act-3-time-v3.png",
+    "assets/act-4-community-v3.png",
+    "assets/act-5-meaning-v3.png"
+  ];
+  const HOTSPOTS_BY_ACT = [
+    [[410, 640], [690, 585], [1020, 570], [1160, 720], [900, 850], [520, 850]],
+    [[762, 575], [600, 238], [946, 338], [1090, 445], [322, 714], [662, 870]],
+    [[350, 330], [300, 575], [585, 745], [880, 860], [1130, 720], [1120, 300]],
+    [[380, 520], [340, 720], [620, 870], [900, 740], [1110, 850], [1020, 430]],
+    [[270, 560], [560, 330], [800, 450], [1120, 520], [940, 800], [530, 800]]
   ];
 
   const assets = {
     maps: MAP_SOURCES.map(() => new Image()),
     bear: new Image(),
     signs: new Image(),
-    blankSign: new Image(),
-    companions: new Image(),
-    pictograms: new Map([...new Set(Object.values(WORD_ICONS).map((entry) => entry.src))].map((source) => [source, new Image()]))
+    blankSign: new Image()
   };
   const held = new Set();
   let assetsReady = false;
@@ -98,12 +86,7 @@
     pendingAdvance: null,
     campaignFinished: false,
     journalChapter: 1,
-    journalEnglish: true,
-    trailLeaves: 0,
-    relationships: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-    rewards: [],
-    reviewQueue: [],
-    wordStats: {}
+    journalEnglish: true
   });
   let state = freshState();
 
@@ -117,26 +100,6 @@
 
   function actForChapter(chapter = state.chapter) {
     return Math.ceil(chapter / 5);
-  }
-
-  function currentCompanion() {
-    return COMPANIONS[actForChapter() - 1];
-  }
-
-  function seasonForChapter(chapter = state.chapter) {
-    if (chapter <= 5) return "SPRING";
-    if (chapter <= 10) return "SUMMER";
-    if (chapter === 11) return "SPRING";
-    if (chapter === 12) return "SUMMER";
-    if (chapter === 13) return "AUTUMN";
-    if (chapter <= 15) return "WINTER";
-    if (chapter <= 20) return "AUTUMN";
-    return "WINTER";
-  }
-
-  function friendshipHearts(act = actForChapter()) {
-    const filled = Math.min(5, Math.ceil((state.relationships[act] || 0) / 2));
-    return `${"♥".repeat(filled)}${"♡".repeat(5 - filled)}`;
   }
 
   function missionKey(chapter = state.chapter, mission = state.mission) {
@@ -160,11 +123,7 @@
   }
 
   function currentHotspots() {
-    return currentMissionWords().map((word, slot) => {
-      const placement = PLACEMENTS[word.id];
-      if (!placement) throw new Error(`Missing semantic placement for ${word.id}.`);
-      return { ...placement, slot, wordId: word.id };
-    });
+    return HOTSPOTS_BY_ACT[actForChapter() - 1].map(([x, y], slot) => ({ x, y, slot }));
   }
 
   function missionTitle(chapter = state.chapter, mission = state.mission) {
@@ -192,11 +151,7 @@
         missionSeen: saved.missionSeen || [],
         completedMissions: saved.completedMissions || [],
         completedChapters: saved.completedChapters || [],
-        completedActs: saved.completedActs || [],
-        relationships: { ...freshState().relationships, ...(saved.relationships || {}) },
-        rewards: saved.rewards || [],
-        reviewQueue: saved.reviewQueue || [],
-        wordStats: saved.wordStats || {}
+        completedActs: saved.completedActs || []
       };
       return true;
     } catch {
@@ -207,10 +162,6 @@
   function setMode(next) {
     if (mode !== next && !["title", "pause", "map", "journal"].includes(mode)) previousMode = mode;
     mode = next;
-    if (next !== "play") {
-      clearTimeout(toastTimer);
-      ui.toast.classList.add("hidden");
-    }
     const visible = {
       title: ui.titleScreen,
       mission: ui.missionBanner,
@@ -220,7 +171,6 @@
       journal: ui.journal,
       map: ui.journeyMap,
       pause: ui.pauseMenu,
-      report: ui.learnerReport,
       confirm: ui.restartConfirm,
       ending: ui.endingScreen
     };
@@ -255,12 +205,7 @@
       state.missionSeen = [];
     }
     const first = currentHotspots()[0];
-    state.player = {
-      x: clamp(first.x, 42, WORLD.width - 42),
-      y: clamp(first.y + 96, 72, WORLD.height - 38),
-      direction: "up",
-      step: 0
-    };
+    state.player = { x: first.x, y: first.y + 96, direction: "up", step: 0 };
     camera.x = clamp(state.player.x - VIEW.width / 2, 0, WORLD.width - VIEW.width);
     camera.y = clamp(state.player.y - VIEW.height / 2, 0, WORLD.height - VIEW.height);
     state.pendingAdvance = null;
@@ -276,10 +221,6 @@
     ui.missionBannerTitle.textContent = chapter.title;
     ui.missionBannerName.textContent = `Mission ${state.mission} · ${missionTitle()}`;
     ui.missionBannerTheme.textContent = chapter.story || sentenceCase(chapter.theme);
-    const companion = currentCompanion();
-    ui.companionRole.textContent = `${companion.name.toUpperCase()} · ${companion.role}`;
-    ui.storyPrompt.textContent = `${companion.story} Today: ${missionTitle()}.`;
-    drawCompanionPortrait();
     ui.missionWordPreview.replaceChildren();
     words.forEach((word, index) => {
       const chip = document.createElement("span");
@@ -291,7 +232,7 @@
   function startMissionPlay() {
     setMode("play");
     canvas.focus();
-    showToast("Follow the golden compass to six meaning-matched signs.");
+    showToast("Explore the six wooden signs. Press A when the marker appears.");
   }
 
   function missionSeenCount() {
@@ -305,14 +246,9 @@
   function updateHud() {
     if (!ui.locationLabel) return;
     const seen = missionSeenCount();
-    const companion = currentCompanion();
     ui.locationLabel.textContent = `ACT ${actForChapter()} · CHAPTER ${state.chapter} · MISSION ${state.mission}`;
-    ui.seenCount.textContent = `${totalEncountered()}/${TOTAL_WORDS}`;
+    ui.seenCount.textContent = `${totalEncountered()}/750`;
     ui.objective.textContent = seen < 6 ? `${missionTitle()} · find six word signs · ${seen}/6` : "Mission check ready";
-    ui.seasonLabel.textContent = seasonForChapter();
-    ui.companionLabel.textContent = companion.name.toUpperCase();
-    ui.friendshipLevel.textContent = friendshipHearts();
-    ui.leafCount.textContent = String(state.trailLeaves || 0);
   }
 
   function showToast(message) {
@@ -335,28 +271,10 @@
     return distance <= 110 ? nearest : null;
   }
 
-  function companionPosition() {
-    const first = currentHotspots()[0];
-    return {
-      x: clamp(first.x - 185, 80, WORLD.width - 80),
-      y: clamp(first.y + 32, 100, WORLD.height - 40)
-    };
-  }
-
-  function companionIsNear() {
-    const companion = companionPosition();
-    return Math.hypot(state.player.x - companion.x, state.player.y - companion.y) <= 105;
-  }
-
   function interact() {
     const hotspot = nearestHotspot();
     if (!hotspot) {
-      if (companionIsNear()) {
-        renderMissionBanner();
-        setMode("mission");
-        return;
-      }
-      showToast("Follow the compass to a sign, or visit your companion.");
+      showToast("Move closer to a wooden word sign.");
       return;
     }
     const word = currentMissionWords()[hotspot.slot];
@@ -371,13 +289,7 @@
     ui.creeWord.textContent = word.cree;
     ui.englishWord.textContent = word.english;
     ui.exposureLabel.textContent = exposureName(state.exposures[word.id]);
-    const placement = PLACEMENTS[word.id];
-    ui.wordMeta.textContent = [
-      word.partOfSpeech,
-      word.grammaticalClass,
-      word.animacy,
-      placement ? `found near ${placement.landmark}` : ""
-    ].filter(Boolean).join(" · ");
+    ui.wordMeta.textContent = [word.partOfSpeech, word.grammaticalClass, word.animacy].filter(Boolean).join(" · ");
     drawWordIcon(ui.wordIcon.getContext("2d"), word, 112, 112);
     renderWordTranslation();
     saveState();
@@ -413,30 +325,11 @@
   function startChallenge(kind, pool, count) {
     challengeKind = kind;
     challengePool = [...pool];
-    challengeRounds = kind === "mission" ? shuffle(pool) : adaptiveReviewSample(pool, count);
+    challengeRounds = kind === "mission" ? shuffle(pool) : shuffle(pool).slice(0, count);
     challengeIndex = 0;
     challengeScore = 0;
     setMode("challenge");
     renderChallengeRound();
-  }
-
-  function adaptiveReviewSample(pool, count) {
-    const queue = new Set(state.reviewQueue || []);
-    return [...pool]
-      .sort((a, b) => {
-        const aStats = state.wordStats[a.id] || {};
-        const bStats = state.wordStats[b.id] || {};
-        const aNeed = (queue.has(a.id) ? 100 : 0) + (aStats.incorrect || 0) * 12 - (aStats.correct || 0) * 3 - (state.exposures[a.id] || 0);
-        const bNeed = (queue.has(b.id) ? 100 : 0) + (bStats.incorrect || 0) * 12 - (bStats.correct || 0) * 3 - (state.exposures[b.id] || 0);
-        return bNeed - aNeed || hashOrder(`${a.id}:${state.totalAttempts}`) - hashOrder(`${b.id}:${state.totalAttempts}`);
-      })
-      .slice(0, count);
-  }
-
-  function hashOrder(value) {
-    let result = 0;
-    for (const character of value) result = Math.imul(31, result) + character.charCodeAt(0) | 0;
-    return result;
   }
 
   function renderChallengeRound() {
@@ -509,14 +402,6 @@
       state.totalCorrect += 1;
       challengeScore += 1;
     }
-    const stats = state.wordStats[target.id] || { correct: 0, incorrect: 0 };
-    if (correct) stats.correct += 1;
-    else stats.incorrect += 1;
-    state.wordStats[target.id] = stats;
-    if (!correct && !state.reviewQueue.includes(target.id)) state.reviewQueue.push(target.id);
-    if (correct && stats.correct >= 2 && stats.correct > stats.incorrect) {
-      state.reviewQueue = state.reviewQueue.filter((id) => id !== target.id);
-    }
     state.exposures[target.id] = (state.exposures[target.id] || 0) + 1;
     [...ui.choiceGrid.children].forEach((button, choiceIndex) => {
       button.disabled = true;
@@ -554,45 +439,27 @@
   function finishMissionCheck() {
     const key = missionKey();
     const replay = state.completedMissions.includes(key);
-    const act = actForChapter();
-    if (!replay) {
-      state.completedMissions.push(key);
-      state.trailLeaves += 1;
-      state.relationships[act] = Math.min(10, (state.relationships[act] || 0) + 1);
-    }
-    const reward = { leaves: replay ? 0 : 1, friendship: replay ? 0 : 1 };
-    if (replay) state.pendingAdvance = { type: "map", score: challengeScore, total: challengeRounds.length, ...reward };
-    else if (state.mission < MISSIONS_PER_CHAPTER) state.pendingAdvance = { type: "next-mission", chapter: state.chapter, mission: state.mission + 1, score: challengeScore, total: 6, ...reward };
-    else state.pendingAdvance = { type: "chapter-gate", chapter: state.chapter, score: challengeScore, total: 6, ...reward };
+    if (!replay) state.completedMissions.push(key);
+    if (replay) state.pendingAdvance = { type: "map", score: challengeScore, total: challengeRounds.length };
+    else if (state.mission < 5) state.pendingAdvance = { type: "next-mission", chapter: state.chapter, mission: state.mission + 1, score: challengeScore, total: 6 };
+    else state.pendingAdvance = { type: "chapter-gate", chapter: state.chapter, score: challengeScore, total: 6 };
     saveState();
     renderCompletionFromPending();
   }
 
   function finishChapterCheck() {
-    const firstCompletion = !state.completedChapters.includes(state.chapter);
-    if (firstCompletion) {
-      state.completedChapters.push(state.chapter);
-      state.trailLeaves += 3;
-      state.rewards.push(`Chapter ${state.chapter} leaf badge`);
-    }
-    const reward = { leaves: firstCompletion ? 3 : 0, friendship: 0 };
-    if (state.chapter % 5 === 0) state.pendingAdvance = { type: "act-gate", act: actForChapter(), score: challengeScore, total: challengeRounds.length, ...reward };
-    else state.pendingAdvance = { type: "next-chapter", chapter: state.chapter + 1, mission: 1, score: challengeScore, total: challengeRounds.length, ...reward };
+    if (!state.completedChapters.includes(state.chapter)) state.completedChapters.push(state.chapter);
+    if (state.chapter % 5 === 0) state.pendingAdvance = { type: "act-gate", act: actForChapter(), score: challengeScore, total: challengeRounds.length };
+    else state.pendingAdvance = { type: "next-chapter", chapter: state.chapter + 1, mission: 1, score: challengeScore, total: challengeRounds.length };
     saveState();
     renderCompletionFromPending();
   }
 
   function finishActCheck() {
     const act = actForChapter();
-    const firstCompletion = !state.completedActs.includes(act);
-    if (firstCompletion) {
-      state.completedActs.push(act);
-      state.trailLeaves += 5;
-      state.rewards.push(`${COMPANIONS[act - 1].name}'s friendship keepsake`);
-    }
-    const reward = { leaves: firstCompletion ? 5 : 0, friendship: 0 };
-    if (act === 5) state.pendingAdvance = { type: "ending", score: challengeScore, total: challengeRounds.length, ...reward };
-    else state.pendingAdvance = { type: "next-chapter", chapter: state.chapter + 1, mission: 1, score: challengeScore, total: challengeRounds.length, ...reward };
+    if (!state.completedActs.includes(act)) state.completedActs.push(act);
+    if (act === 5) state.pendingAdvance = { type: "ending", score: challengeScore, total: challengeRounds.length };
+    else state.pendingAdvance = { type: "next-chapter", chapter: state.chapter + 1, mission: 1, score: challengeScore, total: challengeRounds.length };
     saveState();
     renderCompletionFromPending();
   }
@@ -602,19 +469,17 @@
     if (!pending) return;
     const copy = {
       "next-mission": ["Six words now belong to this mission.", "They will return in chapter and act checks.", "NEXT MISSION"],
-      "chapter-gate": ["Both chapter missions are complete.", "Twelve chapter words are ready for an adaptive recognition check.", "CHAPTER CHECK"],
-      "next-chapter": ["The chapter sign is complete.", "Its twelve words remain in the journal and adaptive review.", "NEXT CHAPTER"],
-      "act-gate": ["Five chapters now connect.", "Complete a mixed check drawn from the 60 focused words in this act.", "ACT CHECK"],
+      "chapter-gate": ["All five chapter missions are complete.", "Thirty chapter words are ready for a mixed recognition check.", "CHAPTER CHECK"],
+      "next-chapter": ["The chapter sign is complete.", "Its thirty words remain in the journal and spaced review.", "NEXT CHAPTER"],
+      "act-gate": ["Five chapters now connect.", "Complete a mixed check drawn from all 150 words in this act.", "ACT CHECK"],
       map: ["Replay complete.", "Your original campaign progress is unchanged.", "JOURNEY MAP"],
-      ending: ["The final act check is complete.", `All ${TOTAL_WORDS} focused words now have a place on the trail.`, "OPEN THE TRAIL"]
+      ending: ["The final act check is complete.", "All 750 curriculum words now have a place on the trail.", "OPEN THE TRAIL"]
     }[pending.type];
     ui.completeTitle.textContent = copy[0];
     ui.completeCopy.textContent = copy[1];
     ui.keepExploringButton.textContent = copy[2];
     ui.completeSeen.textContent = String(totalEncountered());
     ui.completeCorrect.textContent = `${pending.score}/${pending.total}`;
-    ui.completeLeaves.textContent = `+${pending.leaves || 0}`;
-    ui.completeFriendship.textContent = pending.friendship ? "+♡" : "—";
     setMode("complete");
   }
 
@@ -671,7 +536,7 @@
     ui.journalChapter.textContent = `${state.journalChapter}: ${chapterInfo(state.journalChapter)?.title || ""}`;
     ui.journalTranslationButton.textContent = `ENGLISH: ${state.journalEnglish ? "ON" : "OFF"}`;
     ui.previousChapterButton.disabled = state.journalChapter <= 1;
-    ui.nextChapterButton.disabled = state.journalChapter >= TOTAL_CHAPTERS;
+    ui.nextChapterButton.disabled = state.journalChapter >= 25;
     ui.journalList.replaceChildren();
     words.forEach((word) => {
       const encountered = (state.exposures[word.id] || 0) > 0;
@@ -683,51 +548,12 @@
       row.querySelector(".meaning").textContent = encountered && state.journalEnglish ? word.english : "";
       ui.journalList.append(row);
     });
-    ui.journalTotal.textContent = `${totalEncountered()} of ${TOTAL_WORDS} encountered`;
+    ui.journalTotal.textContent = `${totalEncountered()} of 750 encountered`;
   }
 
   function changeJournalChapter(delta) {
-    state.journalChapter = clamp(state.journalChapter + delta, 1, TOTAL_CHAPTERS);
+    state.journalChapter = clamp(state.journalChapter + delta, 1, 25);
     renderJournal();
-  }
-
-  function openLearnerReport() {
-    const accuracy = state.totalAttempts ? Math.round(state.totalCorrect / state.totalAttempts * 100) : null;
-    ui.reportEncountered.textContent = `${totalEncountered()}/${TOTAL_WORDS}`;
-    ui.reportAccuracy.textContent = accuracy === null ? "—" : `${accuracy}%`;
-    ui.reportReviewCount.textContent = String(state.reviewQueue.length);
-    ui.reportLeaves.textContent = String(state.trailLeaves || 0);
-    const hardest = WORDS
-      .filter((word) => (state.wordStats[word.id]?.incorrect || 0) > 0 || state.reviewQueue.includes(word.id))
-      .sort((a, b) => {
-        const aStats = state.wordStats[a.id] || {};
-        const bStats = state.wordStats[b.id] || {};
-        return (bStats.incorrect || 0) - (aStats.incorrect || 0) || (aStats.correct || 0) - (bStats.correct || 0);
-      })
-      .slice(0, 12);
-    ui.reportHardestList.replaceChildren();
-    if (!hardest.length) {
-      const empty = document.createElement("p");
-      empty.className = "report-empty";
-      empty.textContent = "No difficult words recorded yet. Missed choices will appear here and return in adaptive review.";
-      ui.reportHardestList.append(empty);
-    } else {
-      hardest.forEach((word) => {
-        const stats = state.wordStats[word.id] || {};
-        const row = document.createElement("div");
-        row.className = "report-word";
-        row.innerHTML = `<strong></strong><span></span><small></small>`;
-        row.querySelector("strong").textContent = word.cree;
-        row.querySelector("span").textContent = word.english;
-        row.querySelector("small").textContent = `${stats.incorrect || 0} missed · ${stats.correct || 0} correct`;
-        ui.reportHardestList.append(row);
-      });
-    }
-    setMode("report");
-  }
-
-  function closeLearnerReport() {
-    setMode("pause");
   }
 
   function openMap() {
@@ -772,7 +598,7 @@
       button.className = `chapter-card${selectedMapChapter === chapter.chapter ? " selected" : ""}${completed ? " completed" : ""}${unlocked ? "" : " locked"}`;
       button.innerHTML = `<span class="map-status${completed ? " checked" : ""}">${completed ? "" : chapter.chapter}</span><strong></strong><small></small>`;
       button.querySelector("strong").textContent = chapter.title;
-      button.querySelector("small").textContent = unlocked ? `${completedMissionsInChapter(chapter.chapter)}/${MISSIONS_PER_CHAPTER} missions` : "LOCKED";
+      button.querySelector("small").textContent = unlocked ? `${completedMissionsInChapter(chapter.chapter)}/5 missions` : "LOCKED";
       button.addEventListener("click", () => {
         selectedMapChapter = chapter.chapter;
         renderMap();
@@ -780,12 +606,12 @@
       ui.chapterGrid.append(button);
     });
     renderMissionSelect();
-    ui.campaignTotal.textContent = `${totalEncountered()} of ${TOTAL_WORDS} words encountered`;
-    ui.campaignMissions.textContent = `${state.completedMissions.length} of ${TOTAL_MISSIONS} missions complete`;
+    ui.campaignTotal.textContent = `${totalEncountered()} of 750 words encountered`;
+    ui.campaignMissions.textContent = `${state.completedMissions.length} of 125 missions complete`;
   }
 
   function completedMissionsInChapter(chapter) {
-    return Array.from({ length: MISSIONS_PER_CHAPTER }, (_, index) => index + 1).filter((mission) => state.completedMissions.includes(missionKey(chapter, mission))).length;
+    return [1, 2, 3, 4, 5].filter((mission) => state.completedMissions.includes(missionKey(chapter, mission))).length;
   }
 
   function renderMissionSelect() {
@@ -794,7 +620,7 @@
     ui.selectedChapterTitle.textContent = chapter.title;
     ui.selectedChapterTheme.textContent = sentenceCase(chapter.theme);
     ui.missionGrid.replaceChildren();
-    for (let mission = 1; mission <= MISSIONS_PER_CHAPTER; mission += 1) {
+    for (let mission = 1; mission <= 5; mission += 1) {
       const button = document.createElement("button");
       const unlocked = missionUnlocked(selectedMapChapter, mission);
       const completed = state.completedMissions.includes(missionKey(selectedMapChapter, mission));
@@ -848,7 +674,6 @@
       renderWordTranslation();
     } else if (mode === "journal") closeJournal();
     else if (mode === "map") closeMap();
-    else if (mode === "report") closeLearnerReport();
     else if (mode === "confirm") cancelRestart();
     else if (mode === "pause") togglePause();
     else if (mode === "play") togglePause();
@@ -867,7 +692,7 @@
       dy *= Math.SQRT1_2;
     }
     if (dx || dy) {
-      const speed = 260;
+      const speed = 180;
       state.player.x = clamp(state.player.x + dx * speed * dt, 42, WORLD.width - 42);
       state.player.y = clamp(state.player.y + dy * speed * dt, 72, WORLD.height - 38);
       state.player.direction = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? "left" : "right") : (dy < 0 ? "up" : "down");
@@ -887,96 +712,6 @@
     drawEntities();
     drawInteractionMarker();
     ctx.restore();
-    drawSeasonAmbience();
-    drawTrailCompass();
-  }
-
-  function nextUnseenHotspot() {
-    const words = currentMissionWords();
-    const unseen = currentHotspots().filter((hotspot) => !state.missionSeen.includes(words[hotspot.slot]?.id));
-    const pool = unseen.length ? unseen : currentHotspots();
-    return pool.reduce((nearest, hotspot) => {
-      const distance = Math.hypot(state.player.x - hotspot.x, state.player.y - hotspot.y);
-      return !nearest || distance < nearest.distance ? { ...hotspot, distance } : nearest;
-    }, null);
-  }
-
-  function drawTrailCompass() {
-    if (mode !== "play") return;
-    const target = nextUnseenHotspot();
-    if (!target || target.distance < 135) return;
-    const x = VIEW.width - 55;
-    const y = VIEW.height - 55;
-    const angle = Math.atan2(target.y - state.player.y, target.x - state.player.x);
-    ctx.save();
-    ctx.fillStyle = "rgba(18, 45, 37, .92)";
-    ctx.strokeStyle = "#f4d267";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(x, y, 38, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.translate(x, y);
-    ctx.rotate(angle);
-    ctx.fillStyle = "#f4b72d";
-    ctx.beginPath();
-    ctx.moveTo(29, 0);
-    ctx.lineTo(-10, -12);
-    ctx.lineTo(-4, 0);
-    ctx.lineTo(-10, 12);
-    ctx.closePath();
-    ctx.fill();
-    ctx.rotate(-angle);
-    ctx.fillStyle = "#fff4cf";
-    ctx.font = '700 13px "Balsamiq Sans"';
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(String(target.slot + 1), 0, 1);
-    ctx.restore();
-  }
-
-  function drawSeasonAmbience() {
-    if (mode !== "play") return;
-    const season = seasonForChapter();
-    const time = performance.now() / 1000;
-    const styles = {
-      SPRING: { count: 15, color: "rgba(255, 205, 214, .72)", tint: "rgba(110, 180, 110, .025)" },
-      SUMMER: { count: 12, color: "rgba(255, 222, 90, .8)", tint: "rgba(255, 188, 60, .018)" },
-      AUTUMN: { count: 18, color: "rgba(218, 118, 42, .72)", tint: "rgba(166, 77, 29, .035)" },
-      WINTER: { count: 24, color: "rgba(247, 252, 255, .78)", tint: "rgba(150, 200, 230, .055)" }
-    }[season];
-    ctx.save();
-    ctx.fillStyle = styles.tint;
-    ctx.fillRect(0, 0, VIEW.width, VIEW.height);
-    for (let index = 0; index < styles.count; index += 1) {
-      const seed = Math.abs(hashOrder(`${state.chapter}:${index}`));
-      const drift = season === "WINTER" ? 16 : season === "AUTUMN" ? 28 : 12;
-      const x = (seed % VIEW.width + time * drift + Math.sin(time + index) * 24) % VIEW.width;
-      const fall = season === "SUMMER" ? 0 : season === "WINTER" ? 27 : 18;
-      const y = season === "SUMMER"
-        ? (seed * 7 % VIEW.height) + Math.sin(time * 1.7 + index) * 12
-        : (seed * 11 % VIEW.height + time * fall + index * 19) % VIEW.height;
-      ctx.fillStyle = styles.color;
-      if (season === "SUMMER") {
-        ctx.shadowColor = "#ffe972";
-        ctx.shadowBlur = 8;
-        ctx.beginPath();
-        ctx.arc(x, y, 2.2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      } else if (season === "WINTER") {
-        ctx.beginPath();
-        ctx.arc(x, y, 1.5 + index % 3, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(time + index);
-        ctx.fillRect(-3, -1.5, 6, 3);
-        ctx.restore();
-      }
-    }
-    ctx.restore();
   }
 
   function drawWorld() {
@@ -992,15 +727,9 @@
   function drawEntities() {
     const words = currentMissionWords();
     const entities = currentHotspots().map((hotspot) => ({ type: "sign", y: hotspot.y, hotspot, word: words[hotspot.slot] }));
-    const companion = companionPosition();
-    entities.push({ type: "companion", y: companion.y, companion });
     entities.push({ type: "player", y: state.player.y });
     entities.sort((a, b) => a.y - b.y);
-    entities.forEach((entity) => {
-      if (entity.type === "player") drawPlayer();
-      else if (entity.type === "companion") drawCompanion(entity.companion);
-      else drawSign(entity.hotspot, entity.word);
-    });
+    entities.forEach((entity) => entity.type === "player" ? drawPlayer() : drawSign(entity.hotspot, entity.word));
   }
 
   function drawSign(hotspot, word) {
@@ -1017,16 +746,11 @@
       ctx.drawImage(assets.signs, (knownIndex % 3) * sw, Math.floor(knownIndex / 3) * sh, sw, sh, hotspot.x - size / 2, hotspot.y - size + 24, size, size);
     } else {
       ctx.drawImage(assets.blankSign, hotspot.x - size / 2, hotspot.y - size + 24, size, size);
-      const pictogram = getPictogram(word);
-      if (pictogram?.complete && pictogram.naturalWidth) {
-        ctx.drawImage(pictogram, hotspot.x - 34, hotspot.y - 114, 68, 68);
-      } else {
-        drawCategoryMark(ctx, word, hotspot.x, hotspot.y - 78, 24);
-      }
+      drawCategoryMark(ctx, word, hotspot.x, hotspot.y - 78, 24);
       ctx.fillStyle = "#17332b";
-      ctx.font = '700 12px "Balsamiq Sans"';
+      ctx.font = '700 13px "Balsamiq Sans"';
       ctx.textAlign = "center";
-      ctx.fillText(String(hotspot.slot + 1), hotspot.x, hotspot.y - 43);
+      ctx.fillText(String(hotspot.slot + 1), hotspot.x, hotspot.y - 47);
     }
     if (state.missionSeen.includes(word.id)) drawCheck(hotspot.x + 53, hotspot.y - 102);
   }
@@ -1048,59 +772,27 @@
   function drawInteractionMarker() {
     if (mode !== "play") return;
     const nearest = nearestHotspot();
-    const companion = companionIsNear() ? companionPosition() : null;
-    if (!nearest && !companion) return;
-    const target = nearest || companion;
+    if (!nearest) return;
     const pulse = Math.round(Math.sin(performance.now() / 170) * 7);
-    const y = target.y - 138 + pulse;
+    const y = nearest.y - 138 + pulse;
     ctx.fillStyle = "rgba(14, 29, 22, .55)";
     ctx.beginPath();
-    ctx.moveTo(target.x - 24, y - 2);
-    ctx.lineTo(target.x + 24, y - 2);
-    ctx.lineTo(target.x, y + 27);
+    ctx.moveTo(nearest.x - 24, y - 2);
+    ctx.lineTo(nearest.x + 24, y - 2);
+    ctx.lineTo(nearest.x, y + 27);
     ctx.closePath();
     ctx.fill();
     ctx.fillStyle = "#f5bd2f";
     ctx.beginPath();
-    ctx.moveTo(target.x - 20, y - 6);
-    ctx.lineTo(target.x + 20, y - 6);
-    ctx.lineTo(target.x, y + 19);
+    ctx.moveTo(nearest.x - 20, y - 6);
+    ctx.lineTo(nearest.x + 20, y - 6);
+    ctx.lineTo(nearest.x, y + 19);
     ctx.closePath();
     ctx.fill();
     ctx.fillStyle = "#17332b";
     ctx.font = '700 18px "Balsamiq Sans"';
     ctx.textAlign = "center";
-    ctx.fillText("A", target.x, y + 4);
-  }
-
-  function drawCompanion(position) {
-    if (!assetsReady || !assets.companions.naturalWidth) return;
-    const companion = currentCompanion();
-    const sw = assets.companions.naturalWidth / 5;
-    const sh = assets.companions.naturalHeight;
-    const width = 112;
-    const height = 204;
-    ctx.fillStyle = "rgba(11, 21, 16, .28)";
-    ctx.beginPath();
-    ctx.ellipse(position.x, position.y + 5, 37, 12, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.drawImage(assets.companions, companion.sprite * sw, 0, sw, sh, position.x - width / 2, position.y - height + 34, width, height);
-    ctx.fillStyle = "rgba(18, 45, 37, .9)";
-    ctx.fillRect(position.x - 38, position.y + 12, 76, 22);
-    ctx.fillStyle = "#fff4cf";
-    ctx.font = '700 13px "Balsamiq Sans"';
-    ctx.textAlign = "center";
-    ctx.fillText(companion.name, position.x, position.y + 28);
-  }
-
-  function drawCompanionPortrait() {
-    if (!ui.companionPortrait) return;
-    const target = ui.companionPortrait.getContext("2d");
-    target.clearRect(0, 0, ui.companionPortrait.width, ui.companionPortrait.height);
-    if (!assets.companions.complete || !assets.companions.naturalWidth) return;
-    const companion = currentCompanion();
-    const sw = assets.companions.naturalWidth / 5;
-    target.drawImage(assets.companions, companion.sprite * sw, 0, sw, assets.companions.naturalHeight, 19, 3, 80, 112);
+    ctx.fillText("A", nearest.x, y + 4);
   }
 
   function drawPlayer() {
@@ -1120,11 +812,6 @@
     ctx.drawImage(assets.bear, directionIndex * sw, frame * sh, sw, sh, x - size / 2, y - size + 35 - bob, size, size);
   }
 
-  function getPictogram(word) {
-    const spec = WORD_ICONS[word.id];
-    return spec ? assets.pictograms.get(spec.src) : null;
-  }
-
   function drawWordIcon(iconCtx, word, width, height) {
     iconCtx.clearRect(0, 0, width, height);
     iconCtx.imageSmoothingEnabled = false;
@@ -1135,13 +822,7 @@
       iconCtx.drawImage(assets.signs, (knownIndex % 3) * sw, Math.floor(knownIndex / 3) * sh, sw, sh, 0, 0, width, height);
     } else {
       iconCtx.drawImage(assets.blankSign, 0, 0, width, height);
-      const pictogram = getPictogram(word);
-      if (pictogram?.complete && pictogram.naturalWidth) {
-        const size = width * .5;
-        iconCtx.drawImage(pictogram, (width - size) / 2, height * .2, size, size);
-      } else {
-        drawCategoryMark(iconCtx, word, width / 2, height * .47, width * .16);
-      }
+      drawCategoryMark(iconCtx, word, width / 2, height * .47, width * .16);
     }
   }
 
@@ -1191,13 +872,11 @@
   function loadAssets() {
     ui.startButton.disabled = true;
     ui.continueButton.disabled = true;
-    ui.startButton.textContent = "LOADING FIVE ACTS + WORD ART…";
+    ui.startButton.textContent = "LOADING FIVE ACTS…";
     const requests = assets.maps.map((image, index) => loadImage(image, MAP_SOURCES[index]));
     requests.push(loadImage(assets.bear, "assets/bear-sprites-v2.png"));
     requests.push(loadImage(assets.signs, "assets/word-signs-v2.png"));
     requests.push(loadImage(assets.blankSign, "assets/blank-sign-v3.png"));
-    requests.push(loadImage(assets.companions, "assets/companion-sheet-v6-cropped.png"));
-    for (const [source, image] of assets.pictograms) requests.push(loadImage(image, source));
     if (document.fonts?.load) {
       requests.push(document.fonts.load('400 16px "Balsamiq Sans"'));
       requests.push(document.fonts.load('700 16px "Balsamiq Sans"'));
@@ -1207,7 +886,6 @@
       ui.startButton.disabled = false;
       ui.continueButton.disabled = false;
       ui.startButton.textContent = "BEGIN TRAIL";
-      drawCompanionPortrait();
     }).catch(() => {
       ui.startButton.textContent = "ART COULD NOT LOAD";
       ui.startButton.title = "Reload or serve the game from a local web server.";
@@ -1336,8 +1014,6 @@
   ui.nextActButton.addEventListener("click", () => changeMapAct(1));
   ui.resumeButton.addEventListener("click", togglePause);
   ui.pauseMapButton.addEventListener("click", openMap);
-  ui.learnerReportButton.addEventListener("click", openLearnerReport);
-  ui.learnerReportCloseButton.addEventListener("click", closeLearnerReport);
   ui.restartButton.addEventListener("click", restartJourney);
   ui.cancelRestartButton.addEventListener("click", cancelRestart);
   ui.confirmRestartButton.addEventListener("click", confirmRestart);
