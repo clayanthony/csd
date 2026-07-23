@@ -14,7 +14,8 @@ The web build uses a detailed 768×512 production canvas with the same 3:2 aspec
 - **Two-way recognition:** Checks alternate between Cree→English and English→Cree choices.
 - **Spaced cumulative checks:** Six-word mission checks lead to 30-word chapter pools and 150-word act pools.
 - **Full progression:** Mission, chapter, act and final completion states are saved and replayable.
-- **Journey map:** Browse five chapters at a time, inspect progress and replay any unlocked mission.
+- **Everything open from the start:** All five acts, 25 chapters and 125 missions can be selected immediately from the journey map.
+- **Journey map:** Browse five chapters at a time, inspect progress and play or replay any mission in any order.
 - **750-word journal:** Encountered records unlock independently, including repeated written forms with different curriculum IDs.
 - **Silent accessibility:** No typing, microphone, audio or speech recognition.
 - **Three control systems:** Keyboard, touchscreen and standard gamepad.
@@ -56,8 +57,8 @@ No text entry is used anywhere.
 3. Opening a sign shows the Cree form first, with English support available at all times.
 4. First and second encounters show English by default; later encounters encourage recall but never remove support.
 5. The mission check asks six two-way recognition questions.
-6. Five missions unlock a ten-question check drawn from the chapter's 30-word pool.
-7. Five chapters unlock a fifteen-question check drawn from the act's 150-word pool.
+6. Completing all five missions starts a ten-question check drawn from the chapter's 30-word pool.
+7. Completing all five chapters starts a fifteen-question check drawn from the act's 150-word pool.
 8. Completed words remain in the journal and completed missions can be replayed.
 
 English glosses are independent meaning cues, not claims of word-for-word sentence grammar.

@@ -441,16 +441,27 @@
     const replay = state.completedMissions.includes(key);
     if (!replay) state.completedMissions.push(key);
     if (replay) state.pendingAdvance = { type: "map", score: challengeScore, total: challengeRounds.length };
-    else if (state.mission < 5) state.pendingAdvance = { type: "next-mission", chapter: state.chapter, mission: state.mission + 1, score: challengeScore, total: 6 };
-    else state.pendingAdvance = { type: "chapter-gate", chapter: state.chapter, score: challengeScore, total: 6 };
+    else {
+      const remainingMissions = [1, 2, 3, 4, 5].filter((mission) => !state.completedMissions.includes(missionKey(state.chapter, mission)));
+      const nextMission = remainingMissions.find((mission) => mission > state.mission) || remainingMissions[0];
+      state.pendingAdvance = nextMission
+        ? { type: "next-mission", chapter: state.chapter, mission: nextMission, score: challengeScore, total: 6 }
+        : { type: "chapter-gate", chapter: state.chapter, score: challengeScore, total: 6 };
+    }
     saveState();
     renderCompletionFromPending();
   }
 
   function finishChapterCheck() {
     if (!state.completedChapters.includes(state.chapter)) state.completedChapters.push(state.chapter);
-    if (state.chapter % 5 === 0) state.pendingAdvance = { type: "act-gate", act: actForChapter(), score: challengeScore, total: challengeRounds.length };
-    else state.pendingAdvance = { type: "next-chapter", chapter: state.chapter + 1, mission: 1, score: challengeScore, total: challengeRounds.length };
+    const act = actForChapter();
+    const remainingChapters = CHAPTERS
+      .filter((chapter) => chapter.act === act && !state.completedChapters.includes(chapter.chapter))
+      .map((chapter) => chapter.chapter);
+    const nextChapter = remainingChapters.find((chapter) => chapter > state.chapter) || remainingChapters[0];
+    state.pendingAdvance = nextChapter
+      ? { type: "next-chapter", chapter: nextChapter, mission: 1, score: challengeScore, total: challengeRounds.length }
+      : { type: "act-gate", act, score: challengeScore, total: challengeRounds.length };
     saveState();
     renderCompletionFromPending();
   }
@@ -458,8 +469,12 @@
   function finishActCheck() {
     const act = actForChapter();
     if (!state.completedActs.includes(act)) state.completedActs.push(act);
-    if (act === 5) state.pendingAdvance = { type: "ending", score: challengeScore, total: challengeRounds.length };
-    else state.pendingAdvance = { type: "next-chapter", chapter: state.chapter + 1, mission: 1, score: challengeScore, total: challengeRounds.length };
+    const remainingActs = [1, 2, 3, 4, 5].filter((number) => !state.completedActs.includes(number));
+    const nextAct = remainingActs.find((number) => number > act) || remainingActs[0];
+    const nextChapter = CHAPTERS.find((chapter) => chapter.act === nextAct && !state.completedChapters.includes(chapter.chapter))?.chapter;
+    state.pendingAdvance = nextAct
+      ? { type: "next-chapter", chapter: nextChapter || (nextAct - 1) * 5 + 1, mission: 1, score: challengeScore, total: challengeRounds.length }
+      : { type: "ending", score: challengeScore, total: challengeRounds.length };
     saveState();
     renderCompletionFromPending();
   }
@@ -565,18 +580,23 @@
   }
 
   function closeMap() {
-    setMode(previousMode === "ending" ? "ending" : "play");
-    canvas.focus();
+    const destination = previousMode === "ending" ? "ending" : previousMode === "title" ? "title" : "play";
+    setMode(destination);
+    if (destination === "play") canvas.focus();
   }
 
-  function chapterUnlocked(chapter) {
-    return chapter === 1 || state.completedChapters.includes(chapter - 1) || chapter <= state.chapter;
+  function chapterUnlocked() {
+    return true;
   }
 
-  function missionUnlocked(chapter, mission) {
-    if (!chapterUnlocked(chapter)) return false;
-    if (mission === 1) return true;
-    return state.completedMissions.includes(missionKey(chapter, mission - 1));
+  function missionUnlocked() {
+    return true;
+  }
+
+  function beginWorldSelect() {
+    state = freshState();
+    localStorage.removeItem(SAVE_KEY);
+    openMap();
   }
 
   function renderMap() {
@@ -885,7 +905,7 @@
       assetsReady = true;
       ui.startButton.disabled = false;
       ui.continueButton.disabled = false;
-      ui.startButton.textContent = "BEGIN TRAIL";
+      ui.startButton.textContent = "CHOOSE YOUR TRAIL";
     }).catch(() => {
       ui.startButton.textContent = "ART COULD NOT LOAD";
       ui.startButton.title = "Reload or serve the game from a local web server.";
@@ -990,7 +1010,7 @@
     return value ? value.charAt(0).toUpperCase() + value.slice(1) + (/[.!?]$/.test(value) ? "" : ".") : "";
   }
 
-  ui.startButton.addEventListener("click", () => beginGame(false));
+  ui.startButton.addEventListener("click", beginWorldSelect);
   ui.continueButton.addEventListener("click", () => beginGame(true));
   ui.beginMissionButton.addEventListener("click", startMissionPlay);
   ui.wordContinueButton.addEventListener("click", closeWord);
