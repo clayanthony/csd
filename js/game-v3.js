@@ -2,6 +2,7 @@
   "use strict";
 
   const canvas = document.querySelector("#game");
+  const gameFrame = document.querySelector("#game-frame");
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
 
@@ -27,7 +28,8 @@
   }
 
   const SAVE_KEY = "little-bear-words-of-home-300-v1";
-  const VIEW = { width: 768, height: 512 };
+  const BASE_VIEW = Object.freeze({ width: 768, height: 512 });
+  const VIEW = { ...BASE_VIEW };
   const WORLD = { width: 1536, height: 1024 };
   const ATLAS = { cell: 64, columns: 20 };
   const WORDS = CAMPAIGN.words;
@@ -84,6 +86,45 @@
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
+  }
+
+  function viewportForAspect(aspect) {
+    const safeAspect = Number.isFinite(aspect) && aspect > 0 ? aspect : BASE_VIEW.width / BASE_VIEW.height;
+    const baseAspect = BASE_VIEW.width / BASE_VIEW.height;
+    let width = BASE_VIEW.width;
+    let height = BASE_VIEW.height;
+
+    if (safeAspect > baseAspect) width = height * safeAspect;
+    else if (safeAspect < baseAspect) height = width / safeAspect;
+
+    if (width > WORLD.width) {
+      width = WORLD.width;
+      height = width / safeAspect;
+    }
+    if (height > WORLD.height) {
+      height = WORLD.height;
+      width = height * safeAspect;
+    }
+
+    return {
+      width: Math.max(1, Math.round(width)),
+      height: Math.max(1, Math.round(height))
+    };
+  }
+
+  function resizeViewport() {
+    const bounds = gameFrame.getBoundingClientRect();
+    if (bounds.width < 1 || bounds.height < 1) return;
+    const next = viewportForAspect(bounds.width / bounds.height);
+    if (canvas.width === next.width && canvas.height === next.height) return;
+
+    VIEW.width = next.width;
+    VIEW.height = next.height;
+    canvas.width = VIEW.width;
+    canvas.height = VIEW.height;
+    ctx.imageSmoothingEnabled = false;
+    centerCamera(true);
+    draw();
   }
 
   function shuffle(items) {
@@ -161,6 +202,7 @@
 
   function setMode(nextMode) {
     mode = nextMode;
+    document.body.dataset.gameMode = mode;
     const overlays = {
       title: ui.titleScreen,
       mission: ui.missionBanner,
@@ -829,7 +871,7 @@
       assetsReady = true;
       ui.startButton.disabled = false;
       ui.continueButton.disabled = false;
-      ui.startButton.textContent = "EXPLORE ALL WORLDS";
+      ui.startButton.textContent = "PLAY ALL WORLDS";
       if (mode === "journal") renderJournal();
     }).catch(() => {
       ui.startButton.textContent = "ART COULD NOT LOAD";
@@ -887,7 +929,8 @@
       actionB();
     } else if (key === "j" && state.started && ["play", "word", "journal"].includes(mode)) {
       event.preventDefault();
-      mode === "journal" ? closeJournal() : openJournal();
+      if (mode === "journal") closeJournal();
+      else openJournal();
     } else if ((key === "p" || key === "m") && state.started) {
       event.preventDefault();
       togglePause();
@@ -932,13 +975,17 @@
       down: pressed[13] || vertical > 0
     };
     for (const [direction, down] of Object.entries(directions)) {
-      if (mode === "play") down ? held.add(direction) : held.delete(direction);
+      if (mode === "play") {
+        if (down) held.add(direction);
+        else held.delete(direction);
+      }
     }
     if (justPressed(0)) actionA();
     if (justPressed(1)) actionB();
     if (justPressed(9)) togglePause();
     if (justPressed(8) && state.started && ["play", "pause", "map"].includes(mode)) {
-      mode === "map" ? closeMap() : openMap(mode);
+      if (mode === "map") closeMap();
+      else openMap(mode);
     }
     if (mode === "challenge") {
       if (justPressed(14) || justPressed(12)) navigateChallenge(-1);
@@ -998,6 +1045,12 @@
 
   ui.continueButton.classList.toggle("hidden", !hasSave());
   setMode("title");
+  resizeViewport();
+  window.addEventListener("resize", resizeViewport, { passive: true });
+  window.visualViewport?.addEventListener("resize", resizeViewport, { passive: true });
+  if ("ResizeObserver" in window) {
+    new ResizeObserver(resizeViewport).observe(gameFrame);
+  }
   loadAssets();
   requestAnimationFrame(loop);
 })();

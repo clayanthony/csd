@@ -1,8 +1,8 @@
 # Little Bear: Words of Home — 300-Object Edition
 
-A silent, no-typing Plains Cree reading-and-recognition adventure built from the approved 300-word master plan: five open worlds, ten trails, 50 arenas, six discoveries per arena, and one six-round check per arena.
+A silent, no-typing Plains Cree reading-and-recognition adventure built from the approved 300-word master plan: five open worlds, ten trails, 50 arenas, six discoveries per arena, and one six-round check per arena. This edition is an installable, offline-capable phone PWA.
 
-The browser build uses a detailed 768×512 production canvas with the same 3:2 aspect ratio as the Game Boy Advance. Campaign data, state, controls, rendering, and save data remain separate for a later tile-and-sprite port.
+The browser build starts from a detailed 768×512 logical camera and expands that camera to match the device's live aspect ratio. Wider displays reveal more world at the sides; taller displays reveal more above and below. The canvas always scales uniformly, so neither the maps nor the sprites are stretched. Campaign data, state, controls, rendering, and save data remain separate for a later native or tile-and-sprite port.
 
 ## Campaign structure
 
@@ -15,6 +15,9 @@ The browser build uses a detailed 768×512 production canvas with the same 3:2 a
 - **Persistent journal:** Each encountered record unlocks independently, including deliberate duplicate-gloss contrasts.
 - **Silent accessibility:** No typing, microphone, speech recognition, audio, or timed response.
 - **Keyboard, touch, and gamepad controls.**
+- **Installable offline PWA:** After the first complete visit over HTTPS or localhost, the app shell and all production art are cached for offline play.
+- **Natural interface palette:** Espresso, khaki, cream, olive, forest green, bottle green, burgundy, walnut, and muted blue frame the existing artwork without recolouring it.
+- **True fullscreen presentation:** The world, title screen, overlays, HUD, and touch controls fill the complete browser or installed-app viewport in landscape or portrait without changing artwork proportions.
 
 ## Object artwork and placement
 
@@ -28,13 +31,17 @@ Sensitive depictions use restrained, context-neutral treatments: contemporary ev
 
 ## Run it
 
-Open `index.html` directly in a current browser. A local server is recommended:
+Use a local server so the manifest and offline service worker are available:
 
 ```sh
 python3 -m http.server 4173 --directory "web-game 3"
 ```
 
 Then visit `http://localhost:4173`.
+
+To install on Android or desktop Chrome/Edge, use the in-game **INSTALL APP** prompt or the browser's install action. On iPhone/iPad Safari, use **Share → Add to Home Screen**. Launch the installed app once while online and wait for the title badge to report that offline setup is ready.
+
+Opening `index.html` directly still runs the game, but browsers do not allow service-worker installation from a `file:` URL.
 
 ## Controls
 
@@ -67,7 +74,7 @@ This is an internal candidate build, not a language-authorized public release. E
 
 - No source prose, sample sentence, dialogue, exercise, explanation, lesson flow, page design, illustration, or scan is reproduced.
 - The world paintings, bear character, object atlas, boards, UI, campaign implementation, and code are project assets.
-- The art uses broad handheld-era readability without copying protected characters, maps, logos, signature symbols, or interface layouts.
+- The art uses original high-definition pixel-art readability without copying protected characters, maps, logos, signature symbols, or interface layouts.
 - No ceremonial imagery or pan-Indigenous stereotype is intentionally used.
 
 ## Project structure
@@ -81,9 +88,15 @@ web-game 3/
 │   ├── blank-sign-v3.png and word-signs-v2.png (retained legacy art; not loaded)
 │   └── fonts/
 ├── css/game.css
+├── icons/
+│   ├── icon-192.png
+│   ├── icon-512.png
+│   ├── icon-maskable-512.png
+│   └── apple-touch-icon.png
 ├── js/
 │   ├── campaign-300.js
-│   └── game-v3.js
+│   ├── game-v3.js
+│   └── pwa.js
 ├── scripts/
 │   ├── build-object-atlas.py
 │   ├── generate-campaign-300.mjs
@@ -91,7 +104,9 @@ web-game 3/
 ├── preview-five-acts-v3.jpg
 ├── preview-gameplay-v3.jpg
 ├── LANGUAGE_REVIEW.md
+├── manifest.webmanifest
 ├── README.md
+├── service-worker.js
 └── index.html
 ```
 

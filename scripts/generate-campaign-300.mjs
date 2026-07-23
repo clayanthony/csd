@@ -191,7 +191,9 @@ const campaign = {
   version: "300-word-50-arena-v1",
   totals: { worlds: 5, trails: 10, stages: 50, words: 300 },
   worlds,
-  stages: stages.map(({ bounds, ...stage }) => stage),
+  stages: stages.map((stage) => Object.fromEntries(
+    Object.entries(stage).filter(([key]) => key !== "bounds")
+  )),
   words,
 };
 

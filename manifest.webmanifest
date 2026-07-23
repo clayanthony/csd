@@ -1,0 +1,60 @@
+{
+  "id": "./",
+  "name": "Little Bear: Words of Home",
+  "short_name": "Little Bear",
+  "description": "A Cree-first reading adventure with five open worlds, 50 arenas, and 300 illustrated objects.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "./index.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#291204",
+  "theme_color": "#3c4500",
+  "categories": [
+    "education",
+    "games",
+    "kids"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "preview-gameplay-v3.jpg",
+      "sizes": "768x512",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Explore an illustrated world and discover Cree words."
+    },
+    {
+      "src": "preview-five-acts-v3.jpg",
+      "sizes": "920x921",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Five open worlds with all 50 arenas available from the beginning."
+    }
+  ]
+}

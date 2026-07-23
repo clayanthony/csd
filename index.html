@@ -3,8 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#132c28">
+  <meta name="description" content="A Cree-first, offline-friendly reading adventure with five open worlds and 300 illustrated objects.">
+  <meta name="theme-color" content="#3b4309">
+  <meta name="color-scheme" content="dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Little Bear">
   <title>Little Bear: Words of Home — 300-Object Edition</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
   <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
@@ -32,8 +42,12 @@
             <p class="kicker">A CREE-FIRST READING ADVENTURE</p>
             <h1 id="game-title">Little Bear:<br><span>Words of Home</span></h1>
             <p>Learn by exploring, noticing, and seeing words return in meaningful places.</p>
+            <div class="app-readiness">
+              <span id="pwa-status">PHONE EDITION · OFFLINE AFTER FIRST VISIT</span>
+              <button class="install-button hidden" id="install-button" type="button">INSTALL APP</button>
+            </div>
             <div class="title-actions">
-              <button class="primary-button" id="start-button" type="button">EXPLORE ALL WORLDS</button>
+              <button class="primary-button" id="start-button" type="button">PLAY ALL WORLDS</button>
               <button class="secondary-button hidden" id="continue-button" type="button">CONTINUE</button>
             </div>
             <small>All 5 worlds · 10 trails · 50 arenas · 300 illustrated objects open from the beginning</small>
@@ -185,7 +199,10 @@
     </section>
   </main>
 
+  <p class="rotate-hint" id="rotate-hint">Turn your phone sideways for the full trail.</p>
+
   <script src="js/campaign-300.js"></script>
   <script src="js/game-v3.js"></script>
+  <script src="js/pwa.js"></script>
 </body>
 </html>
