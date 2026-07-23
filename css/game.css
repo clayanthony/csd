@@ -392,6 +392,16 @@ kbd {
   font-size: 1.15em;
 }
 
+#challenge-icon {
+  background: rgba(184, 195, 136, .7);
+  border: 3px solid #17332b;
+  box-shadow: inset 0 0 0 2px #d2a83d;
+  height: clamp(52px, 8vw, 84px);
+  image-rendering: pixelated;
+  margin: .15em auto;
+  width: clamp(52px, 8vw, 84px);
+}
+
 .challenge-heading > p:last-child,
 .complete-screen > p:not(.kicker),
 .small-print {
@@ -534,20 +544,34 @@ kbd {
 
 .journal-list {
   display: grid;
-  gap: 1px 2%;
-  grid-auto-flow: column;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(10, 1fr);
-  height: 64%;
+  gap: 2% 3%;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  height: 58%;
+  margin-top: 1.5%;
 }
 
 .journal-entry {
-  align-items: baseline;
-  border-bottom: 1px dotted rgba(41, 68, 55, .42);
+  align-items: center;
+  background: rgba(255, 255, 255, .18);
+  border: 1px solid rgba(41, 68, 55, .32);
   display: flex;
   gap: .5em;
   min-width: 0;
-  padding: .15em .25em;
+  padding: .3em .45em;
+}
+
+.journal-icon {
+  flex: 0 0 auto;
+  height: clamp(30px, 5vw, 48px);
+  image-rendering: pixelated;
+  width: clamp(30px, 5vw, 48px);
+}
+
+.journal-entry > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .journal-entry .number {
@@ -558,6 +582,7 @@ kbd {
 
 .journal-entry .form {
   color: #163e36;
+  display: block;
   font-size: clamp(6px, .85vw, 11px);
   font-weight: 900;
   overflow: hidden;
@@ -567,6 +592,7 @@ kbd {
 
 .journal-entry .meaning {
   color: #824037;
+  display: block;
   font-family: var(--game-font);
   font-size: clamp(5px, .7vw, 8px);
   overflow: hidden;
@@ -658,7 +684,7 @@ kbd {
 
 .journey-map {
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto;
+  grid-template-rows: auto auto auto 1fr auto;
   overflow: hidden;
 }
 
@@ -685,8 +711,16 @@ kbd {
 .chapter-grid {
   display: grid;
   gap: .7em;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   min-height: 0;
+}
+
+.chapter-card {
+  grid-template-columns: auto 1fr;
+}
+
+.chapter-card small {
+  grid-column: 2;
 }
 
 .chapter-card,
@@ -765,6 +799,7 @@ kbd {
   gap: 1em;
   grid-template-columns: 28% 1fr;
   margin-top: .8em;
+  min-height: 0;
   padding: .7em;
 }
 

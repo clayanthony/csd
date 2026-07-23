@@ -1,38 +1,37 @@
-# Little Bear: Words of Home — Complete Browser Campaign
+# Little Bear: Words of Home — 300-Object Edition
 
-A silent, no-typing Plains Cree reading-and-recognition adventure containing the complete 750-entry curriculum: five acts, 25 chapters, 125 missions, five chapter-per-act mastery gates, a persistent journal and a final campaign ending.
+A silent, no-typing Plains Cree reading-and-recognition adventure built from the approved 300-word master plan: five open worlds, ten trails, 50 arenas, six discoveries per arena, and one six-round check per arena.
 
-The web build uses a detailed 768×512 production canvas with the same 3:2 aspect ratio as the Game Boy Advance. Curriculum data, campaign state, controls, rendering and save data remain separate for a later tile-and-sprite GBA port.
+The browser build uses a detailed 768×512 production canvas with the same 3:2 aspect ratio as the Game Boy Advance. Campaign data, state, controls, rendering, and save data remain separate for a later tile-and-sprite port.
 
-## Complete campaign
+## Campaign structure
 
-- **5 visual acts:** Home, Land, Time, Community and Meaning each have an original production environment.
-- **25 chapters:** Five chapters per act, using the curriculum titles, themes and progression.
-- **125 missions:** Five missions per chapter and exactly six new words per mission.
-- **750 curriculum records:** Each record keeps its own ID, Cree form, English support, part of speech, grammatical class, chapter and mission assignment.
-- **Physical exploration:** Little Bear finds six wooden word signs in every mission.
-- **Two-way recognition:** Checks alternate between Cree→English and English→Cree choices.
-- **Spaced cumulative checks:** Six-word mission checks lead to 30-word chapter pools and 150-word act pools.
-- **Full progression:** Mission, chapter, act and final completion states are saved and replayable.
-- **Everything open from the start:** All five acts, 25 chapters and 125 missions can be selected immediately from the journey map.
-- **Journey map:** Browse five chapters at a time, inspect progress and play or replay any mission in any order.
-- **750-word journal:** Encountered records unlock independently, including repeated written forms with different curriculum IDs.
-- **Silent accessibility:** No typing, microphone, audio or speech recognition.
-- **Three control systems:** Keyboard, touchscreen and standard gamepad.
-- **One child-friendly typeface:** Every visible UI label, word card, button and canvas label uses the bundled Balsamiq Sans family.
+- **5 worlds:** Homefire; Hands & Harvest; Forest & Wetland; Lake, Sky & Journey; Community Trail.
+- **10 trails:** Two named trails per world, taken from the master plan's ten regions.
+- **50 arenas:** Five arenas per trail and ten per world.
+- **300 unique records:** Exactly six workbook-assigned entries per arena and 60 per world.
+- **Everything open immediately:** Every world, trail, and arena is selectable from a fresh start. There are no gates or prerequisite locks.
+- **Completion rule:** 100% requires all 300 discoveries and all 50 arena checks.
+- **Persistent journal:** Each encountered record unlocks independently, including deliberate duplicate-gloss contrasts.
+- **Silent accessibility:** No typing, microphone, speech recognition, audio, or timed response.
+- **Keyboard, touch, and gamepad controls.**
 
-## Typography
+## Object artwork and placement
 
-Balsamiq Sans Regular (400) and Bold (700) are self-hosted in `assets/fonts`, so the game does not need a font CDN or network connection. The build waits for both faces before enabling play, and its title artwork contains no baked-in lettering. Direction arrows and completion ticks are drawn with CSS shapes rather than substituted symbol fonts.
+`assets/object-sprites-300.png` is a transparent 20×15 atlas containing one indexed 64×64 pixel-art cell for every master-plan row. Household items, people, body-teaching objects, clothing, foods, wildlife, plants, landforms, weather/calendar cues, buildings, tools, and community scenes all have their own visible art.
 
-Balsamiq Sans is redistributed under the SIL Open Font License 1.1. The required license copy is included at `assets/fonts/OFL-Balsamiq-Sans.txt`.
+The atlas order is identical to the 300-row workbook order. `js/campaign-300.js` preserves each row's unique lexicon ID, Cree form, English cue, grammatical class, category, depiction note, arena, slot, physicality/review flags, and object/board relationship. Workbook coordinates are normalized into each 1536×1024 world while preserving the six-object stage-local layout and board offsets.
+
+The five original world paintings are used unchanged. Objects and the six active boards are separate runtime layers; people and animals move around their assigned anchors, birds and fish drift, and plants sway. No living target is baked into a world background.
+
+Sensitive depictions use restrained, context-neutral treatments: contemporary everyday clothing, no invented ceremonial imagery, safely stored weapons/tools, an unlit plain pipe, a contemporary community landscape for “reserve,” and botanical sage.
 
 ## Run it
 
 Open `index.html` directly in a current browser. A local server is recommended:
 
 ```sh
-python3 -m http.server 4173 --directory web-game
+python3 -m http.server 4173 --directory "web-game 3"
 ```
 
 Then visit `http://localhost:4173`.
@@ -42,7 +41,7 @@ Then visit `http://localhost:4173`.
 | Action | Keyboard | Touch / gamepad |
 |---|---|---|
 | Move / change selection | Arrows or WASD | D-pad / left stick |
-| Look / confirm | Z, Enter or Space | A |
+| Look / confirm | Z, Enter, or Space | A |
 | English / back | X or Escape | B |
 | Word journal | J | WORDS button |
 | Journey map | MAP button | Select |
@@ -52,72 +51,48 @@ No text entry is used anywhere.
 
 ## Learning loop
 
-1. A mission briefing introduces its place in the act and chapter without exposing unseen answers.
-2. Little Bear explores six numbered word signs.
-3. Opening a sign shows the Cree form first, with English support available at all times.
-4. First and second encounters show English by default; later encounters encourage recall but never remove support.
-5. The mission check asks six two-way recognition questions.
-6. Completing all five missions starts a ten-question check drawn from the chapter's 30-word pool.
-7. Completing all five chapters starts a fifteen-question check drawn from the act's 150-word pool.
-8. Completed words remain in the journal and completed missions can be replayed.
+1. Choose any of the five worlds, either trail, and any arena.
+2. Enter the arena and explore its six illustrated objects and six small boards.
+3. Looking at an object shows its Cree form first, with optional English support and its matching illustration.
+4. After all six are found, complete a six-round Cree-to-English recognition check.
+5. The arena check and each independent discovery are saved. Every arena remains replayable.
 
 English glosses are independent meaning cues, not claims of word-for-word sentence grammar.
 
-## Sentence-content boundary
+## Language and cultural review boundary
 
-This build teaches every selected word and the mechanics of reading statement-like sequences, but it deliberately does **not** invent publishable Cree sentences. Chapter 25 retains its curriculum role; speaker-approved sentences can be added to the same campaign engine after community review.
-
-Every form, gloss, grammatical class, picture association and future sentence must be independently approved by authorized Muscowpetung/Plains Cree speakers before public release. See `LANGUAGE_REVIEW.md`.
+This is an internal candidate build, not a language-authorized public release. Every Cree form, gloss, class, image association, duplicate-gloss contrast, and context must be reviewed by authorized fluent speakers and the relevant community process. The game deliberately contains no newly composed Cree sentences. See `LANGUAGE_REVIEW.md`.
 
 ## Rights boundary
 
-- No source prose, sample sentence, dialogue, exercise, explanation, table, lesson flow, page design, illustration or scan is reproduced.
-- The five maps, bear character, signs, UI, campaign structure, mission logic and code are original project assets.
-- The art uses broad handheld-era life-simulation readability and cinematic wilderness atmosphere without copying protected characters, maps, logos, signature symbols or interface layouts.
-- No ceremonial imagery or pan-Indigenous visual stereotypes are used.
-
-## GBA port map
-
-| Browser system | GBA counterpart |
-|---|---|
-| 768×512 3:2 authoring canvas | Retiled 240×160 Mode 0/1 scenes |
-| Five illustrated scrolling maps | Background tilemaps and palettes |
-| Directional bear and sign sheets | 4bpp OBJ sprites |
-| DOM campaign, word and journal panels | Tile-based UI scenes |
-| `lexicon-data.js` | Generated ROM lookup tables |
-| Campaign state machine | Scene enum and update/draw functions |
-| Keyboard/touch/gamepad actions | GBA key bitmask |
-| `localStorage` campaign save | SRAM or Flash save structure |
-
-The GBA conversion still requires palette quantization, map tiling, sprite-size reduction and approved curriculum export.
+- No source prose, sample sentence, dialogue, exercise, explanation, lesson flow, page design, illustration, or scan is reproduced.
+- The world paintings, bear character, object atlas, boards, UI, campaign implementation, and code are project assets.
+- The art uses broad handheld-era readability without copying protected characters, maps, logos, signature symbols, or interface layouts.
+- No ceremonial imagery or pan-Indigenous stereotype is intentionally used.
 
 ## Project structure
 
 ```text
-web-game/
+web-game 3/
 ├── assets/
-│   ├── act-1-home-v3.png
-│   ├── act-2-land-v3.png
-│   ├── act-3-time-v3.png
-│   ├── act-4-community-v3.png
-│   ├── act-5-meaning-v3.png
+│   ├── act-1-home-v3.png … act-5-meaning-v3.png
 │   ├── bear-sprites-v2.png
-│   ├── blank-sign-v3.png
-│   ├── fonts/
-│   │   ├── balsamiq-sans-latin-400-normal.woff2
-│   │   ├── balsamiq-sans-latin-700-normal.woff2
-│   │   └── OFL-Balsamiq-Sans.txt
-│   └── word-signs-v2.png
+│   ├── object-sprites-300.png
+│   ├── blank-sign-v3.png and word-signs-v2.png (retained legacy art; not loaded)
+│   └── fonts/
 ├── css/game.css
-├── js/game-v3.js
-├── js/lexicon-data.js
+├── js/
+│   ├── campaign-300.js
+│   └── game-v3.js
+├── scripts/
+│   ├── build-object-atlas.py
+│   ├── generate-campaign-300.mjs
+│   └── render_campaign_preview.py
 ├── preview-five-acts-v3.jpg
 ├── preview-gameplay-v3.jpg
-├── scripts/generate-lexicon.mjs
-├── scripts/render_campaign_preview.py
 ├── LANGUAGE_REVIEW.md
 ├── README.md
 └── index.html
 ```
 
-`scripts/generate-lexicon.mjs` regenerates browser curriculum data from the project story map. `scripts/render_campaign_preview.py` produces deterministic previews from the same map and sprite assets used by the runtime.
+`build-object-atlas.py` validates and crops 25 ordered 4×3 production sheets. `generate-campaign-300.mjs` validates the 50-stage and 300-placement workbook exports before producing browser data. `render_campaign_preview.py` produces deterministic previews from the exact world and atlas assets used at runtime.

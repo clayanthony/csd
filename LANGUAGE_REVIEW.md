@@ -1,27 +1,22 @@
-# Language review gate
+# Language and cultural review gate
 
-This prototype is safe for internal design testing only. It deliberately uses single vocabulary forms and independent English meaning cues; it contains no newly composed Cree sentences.
+This 300-object prototype is safe for internal design testing only. It uses single vocabulary forms and independent English meaning cues; it contains no newly composed Cree sentences.
 
-Before a public build, an authorized Muscowpetung/Plains Cree language team should review:
+Before a public build, an authorized Muscowpetung/Plains Cree language and community review process should verify:
 
-- the exact orthography and dialect of every visible form;
-- every English gloss, especially slash-separated or context-sensitive meanings;
-- noun animacy and all verb classes;
+- the orthography and dialect of all 300 visible forms;
+- every English gloss, especially slash-separated, relational, calendar, proxy, and context-sensitive meanings;
+- grammatical class and animacy information;
 - which forms are suitable for a beginner's active vocabulary;
-- the introduction order and cultural/contextual fit of each word;
-- every picture-to-word association;
-- every grammatical note and any future sentence as a complete utterance;
-- community protocols for names, stories, land references, and visual content;
-- contributor credit, approval language, and the process for withdrawing or correcting content.
+- the ten-region sequence, 50 arena titles, landmark contexts, and learning order;
+- every one of the 300 picture-to-word associations;
+- deliberate duplicate-gloss contrasts such as cake, cranberries, frying-pan, honey, pepper, potato, rice, and repeated body terms;
+- person and kinship depictions, including leader/chief/responsibility terms;
+- community/place depictions, especially reserve, bar, hospital, clinic, town, mine, and gathering grounds;
+- sensitive object depictions, especially pipe, sage, gun, bow, arrow, axe, skin/hide, pemmican, bannock, feast, and medicines;
+- community protocols for names, stories, land references, visual content, contributor credit, correction, and withdrawal.
 
-## Content that must not be imported from a reference text
-
-- authored explanations or paragraphs;
-- example sentences or dialogues;
-- exercises, prompts, answer keys, and lesson flow;
-- distinctive tables, taxonomies, selection order, or page design;
-- illustrations, scans, fonts, or audio;
-- translations of protected narrative text.
+The current art intentionally avoids invented ceremony and stereotype. That design choice does not replace community approval.
 
 ## Recommended content states
 
@@ -29,8 +24,8 @@ Before a public build, an authorized Muscowpetung/Plains Cree language team shou
 |---|---|
 | Candidate | Selected for design work; not publishable |
 | Speaker checked | Form and core meaning confirmed by a qualified speaker |
-| Context checked | Image, mission use, animacy/class, and learner note confirmed |
+| Context checked | Image, arena use, animacy/class, and learner note confirmed |
 | Community approved | Cleared through the project's community approval process |
 | Release ready | Credits, permissions record, version, and correction contact attached |
 
-The current prototype entries should all be treated as **Candidate** until that review occurs.
+All current entries remain **Candidate** until that review occurs.

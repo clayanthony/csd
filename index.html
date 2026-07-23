@@ -4,24 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#132c28">
-  <title>Little Bear: Words of Home — Complete Campaign</title>
+  <title>Little Bear: Words of Home — 300-Object Edition</title>
   <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
   <main class="page-shell">
-    <section class="game-shell" aria-label="Little Bear: Words of Home complete campaign">
+    <section class="game-shell" aria-label="Little Bear: Words of Home 300-object campaign">
       <div class="game-frame" id="game-frame">
         <canvas id="game" width="768" height="512" tabindex="0" aria-label="Explore the reading trail with Little Bear"></canvas>
         <div class="pixel-glass" aria-hidden="true"></div>
 
         <header class="hud hidden" id="hud">
           <div>
-            <span class="eyebrow" id="location-label">ACT 1 · CHAPTER 1 · MISSION 1</span>
-            <strong id="objective">Find the six word signs</strong>
+            <span class="eyebrow" id="location-label">WORLD 1 · ARENA 1</span>
+            <strong id="objective">Find the six illustrated objects</strong>
           </div>
           <div class="hud-actions">
             <button class="hud-button" id="map-button" type="button" aria-label="Open journey map">MAP</button>
-            <button class="hud-button" id="journal-button" type="button" aria-label="Open word journal">WORDS <span id="seen-count">0/750</span></button>
+            <button class="hud-button" id="journal-button" type="button" aria-label="Open word journal">WORDS <span id="seen-count">0/300</span></button>
           </div>
         </header>
 
@@ -33,21 +33,21 @@
             <h1 id="game-title">Little Bear:<br><span>Words of Home</span></h1>
             <p>Learn by exploring, noticing, and seeing words return in meaningful places.</p>
             <div class="title-actions">
-              <button class="primary-button" id="start-button" type="button">CHOOSE YOUR TRAIL</button>
+              <button class="primary-button" id="start-button" type="button">EXPLORE ALL WORLDS</button>
               <button class="secondary-button hidden" id="continue-button" type="button">CONTINUE</button>
             </div>
-            <small>All 5 acts · 25 chapters · 125 missions open from the beginning</small>
+            <small>All 5 worlds · 10 trails · 50 arenas · 300 illustrated objects open from the beginning</small>
           </div>
         </section>
 
         <section class="mission-banner modal hidden" id="mission-banner" aria-modal="true" role="dialog" aria-labelledby="mission-banner-title">
-          <p class="kicker" id="mission-banner-kicker">ACT 1 · CHAPTER 1</p>
-          <h2 id="mission-banner-title">The First Blank Sign</h2>
-          <p class="mission-name" id="mission-banner-name">Mission 1 · A Sign with No Words</p>
-          <p class="mission-theme" id="mission-banner-theme">Greetings, noticing, and the first things Little Bear can point to.</p>
+          <p class="kicker" id="mission-banner-kicker">WORLD 1 · HOMEFIRE</p>
+          <h2 id="mission-banner-title">Bedroom Warmth</h2>
+          <p class="mission-name" id="mission-banner-name">Arena 1 of 50</p>
+          <p class="mission-theme" id="mission-banner-theme">Bedroom, pantry wall and north lodge door</p>
           <div class="mission-word-preview" id="mission-word-preview"></div>
-          <p class="speaker-note">Explore six word signs. Cree appears first; English support always remains available.</p>
-          <button class="primary-button" id="begin-mission-button" type="button"><kbd>A</kbd> BEGIN MISSION</button>
+          <p class="speaker-note">Explore six illustrated objects. Cree appears first; English support is always available.</p>
+          <button class="primary-button" id="begin-mission-button" type="button"><kbd>A</kbd> ENTER ARENA</button>
         </section>
 
         <section class="word-card modal hidden" id="word-card" aria-modal="true" role="dialog" aria-labelledby="cree-word">
@@ -59,7 +59,7 @@
             <p class="cree-word" id="cree-word">maskwa</p>
             <p class="english-word" id="english-word">bear</p>
             <p class="translation-note" id="translation-note">English support is visible on early encounters.</p>
-            <p class="word-meta" id="word-meta">Noun · speaker verification required</p>
+            <p class="word-meta" id="word-meta">Inanimate noun · community speaker review pending</p>
           </div>
           <div class="modal-actions">
             <button class="secondary-button" id="translation-button" type="button"><kbd>B</kbd> ENGLISH</button>
@@ -69,7 +69,8 @@
 
         <section class="challenge modal hidden" id="challenge" aria-modal="true" role="dialog" aria-labelledby="challenge-title">
           <div class="challenge-heading">
-            <p class="kicker"><span id="challenge-kind-label">MISSION CHECK</span> <span id="round-label">1/6</span></p>
+            <p class="kicker"><span id="challenge-kind-label">ARENA CHECK</span> <span id="round-label">1/6</span></p>
+            <canvas id="challenge-icon" width="96" height="96" aria-hidden="true"></canvas>
             <h2 id="challenge-title"><span id="challenge-prompt">Which meaning matches</span> <span id="challenge-word">maskwa</span>?</h2>
             <p id="challenge-instruction">Choose by meaning. No spelling or typing.</p>
           </div>
@@ -79,56 +80,56 @@
         </section>
 
         <section class="complete-screen modal hidden" id="complete-screen" aria-modal="true" role="dialog" aria-labelledby="complete-title">
-          <p class="kicker">TRAIL SIGN COMPLETE</p>
+          <p class="kicker">ARENA CHECK COMPLETE</p>
           <h2 id="complete-title">Six words now belong to this place.</h2>
-          <p id="complete-copy">This mission is complete. Its words will return in later checks.</p>
+          <p id="complete-copy">This arena is complete. Its words remain available for replay.</p>
           <div class="completion-stats">
             <span><strong id="complete-seen">6</strong> words encountered</span>
             <span><strong id="complete-correct">0</strong> correct choices</span>
           </div>
-          <button class="primary-button" id="keep-exploring-button" type="button">CONTINUE JOURNEY</button>
+          <button class="primary-button" id="keep-exploring-button" type="button">RETURN TO WORLD MAP</button>
         </section>
 
         <section class="journey-map modal full-modal hidden" id="journey-map" aria-modal="true" role="dialog" aria-labelledby="journey-map-title">
           <header class="journal-header">
             <div>
               <p class="kicker">JOURNEY MAP · ALL WORLDS OPEN</p>
-              <h2 id="journey-map-title">Act <span id="map-act-number">1</span>: <span id="map-act-name">Words Close to Home</span></h2>
+              <h2 id="journey-map-title">World <span id="map-act-number">1</span>: <span id="map-act-name">Homefire</span></h2>
             </div>
             <button class="close-button" id="map-close-button" type="button" aria-label="Close journey map">×</button>
           </header>
           <div class="act-navigation">
-            <button class="secondary-button" id="previous-act-button" type="button"><span class="direction-icon left" aria-hidden="true"></span> ACT</button>
-            <p id="act-progress-label">0 of 5 chapters complete</p>
-            <button class="secondary-button" id="next-act-button" type="button">ACT <span class="direction-icon right" aria-hidden="true"></span></button>
+            <button class="secondary-button" id="previous-act-button" type="button"><span class="direction-icon left" aria-hidden="true"></span> WORLD</button>
+            <p id="act-progress-label">0 of 10 arenas checked</p>
+            <button class="secondary-button" id="next-act-button" type="button">WORLD <span class="direction-icon right" aria-hidden="true"></span></button>
           </div>
           <div class="chapter-grid" id="chapter-grid"></div>
           <section class="mission-select" aria-labelledby="selected-chapter-title">
             <div>
-              <p class="kicker" id="selected-chapter-label">CHAPTER 1</p>
-              <h3 id="selected-chapter-title">The First Blank Sign</h3>
+              <p class="kicker" id="selected-chapter-label">TRAIL 1</p>
+              <h3 id="selected-chapter-title">Lodge &amp; Home Grounds</h3>
               <p id="selected-chapter-theme"></p>
             </div>
             <div class="mission-grid" id="mission-grid"></div>
           </section>
-          <footer><span id="campaign-total">0 of 750 words encountered</span><span id="campaign-missions">0 of 125 missions complete</span></footer>
+          <footer><span id="campaign-total">0 of 300 words encountered</span><span id="campaign-missions">0 of 50 arena checks complete</span></footer>
         </section>
 
         <section class="journal modal full-modal hidden" id="journal" aria-modal="true" role="dialog" aria-labelledby="journal-title">
           <header class="journal-header">
             <div>
               <p class="kicker">WORD JOURNAL</p>
-              <h2 id="journal-title">Chapter <span id="journal-chapter">6</span></h2>
+              <h2 id="journal-title">Arena <span id="journal-chapter">1</span></h2>
             </div>
             <button class="close-button" id="journal-close-button" type="button" aria-label="Close journal">×</button>
           </header>
           <div class="journal-tools">
-            <button type="button" id="previous-chapter-button"><span class="direction-icon left" aria-hidden="true"></span> CHAPTER</button>
+            <button type="button" id="previous-chapter-button"><span class="direction-icon left" aria-hidden="true"></span> ARENA</button>
             <button type="button" id="journal-translation-button">ENGLISH: ON</button>
-            <button type="button" id="next-chapter-button">CHAPTER <span class="direction-icon right" aria-hidden="true"></span></button>
+            <button type="button" id="next-chapter-button">ARENA <span class="direction-icon right" aria-hidden="true"></span></button>
           </div>
           <div class="journal-list" id="journal-list"></div>
-          <footer><span id="journal-total">0 of 750 encountered</span><span>Translations are independent meanings, not word-for-word grammar.</span></footer>
+          <footer><span id="journal-total">0 of 300 encountered</span><span>Translations are independent meanings, not word-for-word grammar.</span></footer>
         </section>
 
         <section class="pause-menu modal hidden" id="pause-menu" aria-modal="true" role="dialog" aria-labelledby="pause-title">
@@ -142,8 +143,8 @@
 
         <section class="restart-confirm modal hidden" id="restart-confirm" aria-modal="true" role="dialog" aria-labelledby="restart-confirm-title">
           <p class="kicker">RESTART JOURNEY?</p>
-          <h2 id="restart-confirm-title">Clear every saved word and chapter?</h2>
-          <p>This cannot be undone. Your 750-word journal, mission progress and act checks will return to the beginning.</p>
+          <h2 id="restart-confirm-title">Clear every saved word and arena?</h2>
+          <p>This cannot be undone. Your 300-word journal and 50 arena checks will return to the beginning.</p>
           <div class="confirm-actions">
             <button class="secondary-button" id="cancel-restart-button" type="button">KEEP MY JOURNEY</button>
             <button class="danger-button" id="confirm-restart-button" type="button">YES, RESTART</button>
@@ -152,12 +153,12 @@
 
         <section class="ending-screen modal hidden" id="ending-screen" aria-modal="true" role="dialog" aria-labelledby="ending-title">
           <p class="kicker">THE TRAIL OPENS</p>
-          <h2 id="ending-title">All 750 words have a place on the trail.</h2>
-          <p>Little Bear has completed 125 missions across five acts. Every encountered word remains in the journal and every completed chapter can be replayed.</p>
+          <h2 id="ending-title">All 300 words have a place on the trail.</h2>
+          <p>Little Bear has completed 50 arena checks across five open worlds. Every word remains in the journal and every arena can be replayed.</p>
           <div class="completion-stats">
-            <span><strong>750</strong> curriculum words</span>
-            <span><strong>25</strong> chapters</span>
-            <span><strong>5</strong> act gates</span>
+            <span><strong>300</strong> illustrated words</span>
+            <span><strong>50</strong> arenas</span>
+            <span><strong>5</strong> open worlds</span>
           </div>
           <button class="primary-button" id="ending-map-button" type="button">REVISIT THE TRAIL</button>
         </section>
@@ -184,7 +185,7 @@
     </section>
   </main>
 
-  <script src="js/lexicon-data.js"></script>
+  <script src="js/campaign-300.js"></script>
   <script src="js/game-v3.js"></script>
 </body>
 </html>
