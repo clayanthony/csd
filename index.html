@@ -15,12 +15,47 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/game.css">
+  <link rel="preload" as="image" href="assets/act-1-home-v3.png">
+  <link rel="preload" as="image" href="assets/act-2-land-v3.png">
+  <link rel="preload" as="image" href="assets/act-3-time-v3.png">
+  <link rel="preload" as="image" href="assets/act-4-community-v3.png">
+  <link rel="preload" as="image" href="assets/act-5-meaning-v3.png">
+  <link rel="preload" as="image" href="assets/bear-sprites-v2.png">
+  <link rel="preload" as="image" href="assets/object-sprites-300.png">
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/balsamiq-sans-latin-400-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/balsamiq-sans-latin-700-normal.woff2" crossorigin>
+  <link rel="stylesheet" href="css/game.css?v=12">
 </head>
 <body>
   <main class="page-shell">
     <section class="game-shell" aria-label="Little Bear: Words of Home 300-object campaign">
-      <div class="game-frame" id="game-frame">
+      <div class="game-frame" id="game-frame" aria-busy="true">
+        <section class="boot-screen" id="boot-screen" aria-labelledby="boot-title" aria-describedby="boot-status">
+          <div class="boot-horizon" aria-hidden="true"></div>
+          <div class="boot-stage">
+            <h1 class="boot-wordmark" id="boot-title" aria-label="TATAWAW TEACHINGS">
+              <span class="boot-tatawaw" aria-hidden="true">
+                <span class="boot-letter" style="--letter-index: 0; --letter-color: var(--forest-green)">T</span>
+                <span class="boot-letter" style="--letter-index: 1; --letter-color: var(--walnut)">A</span>
+                <span class="boot-letter" style="--letter-index: 2; --letter-color: var(--bottle-green)">T</span>
+                <span class="boot-letter" style="--letter-index: 3; --letter-color: var(--burgundy)">A</span>
+                <span class="boot-letter" style="--letter-index: 4; --letter-color: var(--gunmetal-blue)">W</span>
+                <span class="boot-letter" style="--letter-index: 5; --letter-color: var(--dark-olive)">A</span>
+                <span class="boot-letter" style="--letter-index: 6; --letter-color: var(--medium-brown)">W</span>
+              </span>
+              <span class="boot-teachings" aria-hidden="true">TEACHINGS</span>
+            </h1>
+
+            <div class="boot-readiness" role="status" aria-live="polite">
+              <div class="boot-progress" aria-hidden="true">
+                <span id="boot-progress-fill"></span>
+              </div>
+              <p id="boot-status">PREPARING FIVE WORLDS · 0 OF 9 ASSET SETS</p>
+              <button class="boot-reload hidden" id="boot-reload-button" type="button">RELOAD APP</button>
+            </div>
+          </div>
+        </section>
+
         <canvas id="game" width="768" height="512" tabindex="0" aria-label="Explore the reading trail with Little Bear"></canvas>
         <div class="pixel-glass" aria-hidden="true"></div>
 
@@ -32,6 +67,7 @@
           <div class="hud-actions">
             <button class="hud-button" id="map-button" type="button" aria-label="Open journey map">MAP</button>
             <button class="hud-button" id="journal-button" type="button" aria-label="Open word journal">WORDS <span id="seen-count">0/300</span></button>
+            <button class="hud-button music-button" id="music-button" data-music-toggle type="button" aria-label="Toggle woodland music" aria-pressed="true">MUSIC: ON</button>
           </div>
         </header>
 
@@ -39,19 +75,24 @@
           <img src="assets/act-5-meaning-v3.png" alt="Pixel-art parkland trails converge at a hilltop reading pavilion">
           <div class="title-scrim"></div>
           <div class="title-copy">
-            <p class="kicker">A CREE-FIRST READING ADVENTURE</p>
-            <h1 id="game-title">Little Bear:<br><span>Words of Home</span></h1>
-            <p>Learn by exploring, noticing, and seeing words return in meaningful places.</p>
+            <div class="title-logo-plate">
+              <p class="kicker">A CREE-FIRST READING ADVENTURE</p>
+              <h1 id="game-title">Little Bear:<br><span>Words of Home</span></h1>
+              <p class="title-tagline">A gentle reading trail through five living worlds.</p>
+            </div>
             <div class="app-readiness">
-              <span id="pwa-status">PHONE EDITION · OFFLINE AFTER FIRST VISIT</span>
+              <span id="pwa-status">OFFLINE READY · SAVES ON THIS PHONE</span>
               <button class="install-button hidden" id="install-button" type="button">INSTALL APP</button>
+              <button class="music-toggle" id="title-music-button" data-music-toggle type="button" aria-label="Toggle woodland music" aria-pressed="true">MUSIC: ON</button>
             </div>
             <div class="title-actions">
-              <button class="primary-button" id="start-button" type="button">PLAY ALL WORLDS</button>
-              <button class="secondary-button hidden" id="continue-button" type="button">CONTINUE</button>
+              <button class="primary-button" id="start-button" type="button">PRESS A · BEGIN</button>
+              <button class="secondary-button hidden" id="continue-button" type="button">CONTINUE JOURNEY</button>
             </div>
-            <small>All 5 worlds · 10 trails · 50 arenas · 300 illustrated objects open from the beginning</small>
+            <p class="title-prompt" aria-hidden="true"><span class="title-prompt-mark">A</span> PRESS A TO BEGIN</p>
+            <small>5 worlds · 10 trails · 50 arenas · 300 illustrated objects · all open</small>
           </div>
+          <p class="title-footer" aria-hidden="true">TATAWAW TEACHINGS · OFFLINE READING TRAIL</p>
         </section>
 
         <section class="mission-banner modal hidden" id="mission-banner" aria-modal="true" role="dialog" aria-labelledby="mission-banner-title">
@@ -201,8 +242,8 @@
 
   <p class="rotate-hint" id="rotate-hint">Turn your phone sideways for the full trail.</p>
 
-  <script src="js/campaign-300.js"></script>
-  <script src="js/game-v3.js"></script>
-  <script src="js/pwa.js"></script>
+  <script src="js/campaign-300.js?v=12"></script>
+  <script src="js/game-v3.js?v=12"></script>
+  <script src="js/pwa.js?v=12"></script>
 </body>
 </html>

@@ -1,12 +1,12 @@
-const CACHE_NAME = "little-bear-words-home-v5";
+const CACHE_NAME = "little-bear-words-home-v12";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./css/game.css",
-  "./js/campaign-300.js",
-  "./js/game-v3.js",
-  "./js/pwa.js",
+  "./css/game.css?v=12",
+  "./js/campaign-300.js?v=12",
+  "./js/game-v3.js?v=12",
+  "./js/pwa.js?v=12",
   "./assets/act-1-home-v3.png",
   "./assets/act-2-land-v3.png",
   "./assets/act-3-time-v3.png",

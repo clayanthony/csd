@@ -1,6 +1,6 @@
 # Little Bear: Words of Home — 300-Object Edition
 
-A silent, no-typing Plains Cree reading-and-recognition adventure built from the approved 300-word master plan: five open worlds, ten trails, 50 arenas, six discoveries per arena, and one six-round check per arena. This edition is an installable, offline-capable phone PWA.
+A no-typing Plains Cree reading-and-recognition adventure built from the approved 300-word master plan: five open worlds, ten trails, 50 arenas, six discoveries per arena, and one six-round check per arena. This edition is an installable, offline-capable phone PWA with optional original instrumental woodland music.
 
 The browser build starts from a detailed 768×512 logical camera and expands that camera to match the device's live aspect ratio. Wider displays reveal more world at the sides; taller displays reveal more above and below. The canvas always scales uniformly, so neither the maps nor the sprites are stretched. Campaign data, state, controls, rendering, and save data remain separate for a later native or tile-and-sprite port.
 
@@ -13,9 +13,13 @@ The browser build starts from a detailed 768×512 logical camera and expands tha
 - **Everything open immediately:** Every world, trail, and arena is selectable from a fresh start. There are no gates or prerequisite locks.
 - **Completion rule:** 100% requires all 300 discoveries and all 50 arena checks.
 - **Persistent journal:** Each encountered record unlocks independently, including deliberate duplicate-gloss contrasts.
-- **Silent accessibility:** No typing, microphone, speech recognition, audio, or timed response.
+- **Silent reading activities:** No typing, microphone, speech recognition, spoken Cree, voiceover, listening test, or timed response. Optional instrumental music can be turned on or off.
+- **Original offline tune:** “Meadow Afterglow” is generated locally with Web Audio, so it adds a gentle woodland loop without an audio download or network dependency.
 - **Keyboard, touch, and gamepad controls.**
+- **iPhone-safe controller deck:** Long-press selection and touch callouts are disabled on the controls, with B lower-left and A upper-right on a Game Boy-style diagonal.
 - **Installable offline PWA:** After the first complete visit over HTTPS or localhost, the app shell and all production art are cached for offline play.
+- **Asset-gated boot sequence:** “TATAWAW TEACHINGS” remains on screen until all five world paintings, both sprite atlases, and both game-font weights have loaded and decoded. The title screen is never revealed over partially loaded art.
+- **Handheld farm-life opening:** The title screen uses an original cozy GBA-era composition with an early-autumn/day ribbon, framed game mark, animated sky accents, and an A-to-begin prompt while keeping the Little Bear art and identity original.
 - **Natural interface palette:** Espresso, khaki, cream, olive, forest green, bottle green, burgundy, walnut, and muted blue frame the existing artwork without recolouring it.
 - **True fullscreen presentation:** The world, title screen, overlays, HUD, and touch controls fill the complete browser or installed-app viewport in landscape or portrait without changing artwork proportions.
 
@@ -53,6 +57,7 @@ Opening `index.html` directly still runs the game, but browsers do not allow ser
 | Word journal | J | WORDS button |
 | Journey map | MAP button | Select |
 | Pause | P or M | Start / MENU |
+| Music | MUSIC button | MUSIC button |
 
 No text entry is used anywhere.
 

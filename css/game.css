@@ -159,7 +159,9 @@ button {
 
 .hud-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: .55em;
+  justify-content: flex-end;
   pointer-events: auto;
 }
 
@@ -189,7 +191,6 @@ button {
   inset: 10% 47% 7% 5%;
   justify-content: center;
   position: absolute;
-  text-shadow: 2px 2px 0 var(--shadow);
 }
 
 .title-copy h1 {
@@ -1194,10 +1195,6 @@ body {
     linear-gradient(0deg, rgba(60, 69, 0, .28), transparent 60%);
 }
 
-.title-copy {
-  text-shadow: 2px 2px 0 rgba(41, 18, 4, .82);
-}
-
 .title-copy h1 {
   color: var(--beige);
 }
@@ -1242,6 +1239,26 @@ body {
   font-weight: 900;
   letter-spacing: .04em;
   padding: .38em .72em;
+}
+
+.music-toggle {
+  background: rgba(41, 18, 4, .82);
+  border: 1px solid rgba(250, 234, 165, .74);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--espresso);
+  color: var(--mint-cream);
+  cursor: pointer;
+  font-size: clamp(7px, .9vw, 11px);
+  font-weight: 900;
+  letter-spacing: .04em;
+  padding: .38em .72em;
+}
+
+.music-toggle[aria-pressed="false"],
+.hud-button.music-button[aria-pressed="false"] {
+  background: rgba(41, 18, 4, .5);
+  color: var(--khaki);
+  opacity: .82;
 }
 
 .primary-button,
@@ -1785,5 +1802,723 @@ body:not([data-game-mode="play"]) .controls {
 
   .system-controls p {
     display: none;
+  }
+}
+
+/* Asset-gated startup sequence.
+   The chromatic, high-speed wordmark nods to early handheld boot screens while
+   using this game's own name, natural palette, typography, and motion. */
+.boot-screen {
+  --boot-progress: 0;
+  align-items: center;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 255, 255, .92) 0 9%, transparent 42%),
+    radial-gradient(circle at 18% 18%, rgba(195, 238, 244, .38), transparent 30%),
+    radial-gradient(circle at 82% 78%, rgba(250, 234, 165, .42), transparent 34%),
+    linear-gradient(155deg, #fffdf8, var(--beige) 62%, #e4dfc8);
+  color: var(--dark-navy);
+  display: grid;
+  inset: 0;
+  isolation: isolate;
+  overflow: hidden;
+  padding:
+    max(20px, env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right))
+    max(20px, env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left));
+  place-items: center;
+  position: absolute;
+  transition:
+    opacity .62s cubic-bezier(.55, 0, 1, .45),
+    filter .62s ease,
+    visibility .62s step-end;
+  z-index: 100;
+}
+
+.boot-screen::before {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(18, 42, 67, .022) 0,
+      rgba(18, 42, 67, .022) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
+.boot-screen::after {
+  background: linear-gradient(
+    105deg,
+    transparent 34%,
+    rgba(255, 255, 255, 0) 41%,
+    rgba(255, 255, 255, .9) 50%,
+    rgba(255, 255, 255, 0) 59%,
+    transparent 66%
+  );
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-80%);
+  z-index: 2;
+  animation: boot-sheen 1.15s 1.05s ease-out both;
+}
+
+.boot-horizon {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 109, 89, .1) 22%,
+      rgba(71, 125, 161, .7) 49%,
+      rgba(220, 144, 9, .34) 76%,
+      transparent
+    );
+  height: 2px;
+  left: 50%;
+  position: absolute;
+  top: 52%;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  width: min(88vw, 940px);
+  animation: boot-horizon-open .8s .1s cubic-bezier(.2, .75, .2, 1) both;
+}
+
+.boot-stage {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 1100px;
+  min-height: min(76vh, 680px);
+  position: relative;
+  text-align: center;
+  width: 100%;
+  z-index: 1;
+}
+
+.boot-wordmark {
+  font-family: "Arial Black", "Avenir Next", "Trebuchet MS", sans-serif;
+  font-size: clamp(38px, 12.5vmin, 118px);
+  font-style: italic;
+  font-weight: 950;
+  letter-spacing: -.085em;
+  line-height: .78;
+  margin: 0;
+  position: relative;
+  text-transform: uppercase;
+  transform: skewX(-5deg);
+  transition:
+    filter .35s ease,
+    transform .35s cubic-bezier(.2, .8, .2, 1);
+  white-space: nowrap;
+}
+
+.boot-tatawaw {
+  align-items: baseline;
+  display: flex;
+  justify-content: center;
+}
+
+.boot-letter {
+  color: var(--letter-color);
+  display: inline-block;
+  opacity: 0;
+  text-shadow:
+    .025em .035em 0 rgba(247, 244, 237, .94),
+    .055em .065em 0 rgba(18, 42, 67, .18),
+    .085em .095em 0 rgba(41, 18, 4, .09);
+  transform: translateY(48%) scale(.72);
+  -webkit-text-stroke: .012em rgba(41, 18, 4, .2);
+  animation: boot-letter-rise .64s cubic-bezier(.16, .86, .28, 1.25) both;
+  animation-delay: calc(.2s + var(--letter-index) * .065s);
+}
+
+.boot-teachings {
+  color: var(--dark-navy);
+  display: block;
+  font-size: .26em;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: .62em;
+  line-height: 1;
+  margin-left: .62em;
+  margin-top: .82em;
+  opacity: 0;
+  text-shadow: .09em .09em 0 rgba(71, 125, 161, .2);
+  transform: translateY(.9em);
+  animation: boot-subtitle-arrive .55s .88s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.boot-readiness {
+  bottom: clamp(6px, 4vh, 42px);
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: min(82vw, 430px);
+}
+
+.boot-progress {
+  background: rgba(18, 42, 67, .1);
+  border: 1px solid rgba(18, 42, 67, .16);
+  border-radius: 999px;
+  height: 5px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.boot-progress span {
+  background:
+    linear-gradient(90deg, var(--forest-green), var(--bottle-green) 44%, var(--gunmetal-blue) 72%, var(--walnut));
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  transform: scaleX(var(--boot-progress));
+  transform-origin: left center;
+  transition: transform .28s cubic-bezier(.2, .75, .2, 1);
+  width: 100%;
+}
+
+.boot-readiness p {
+  color: var(--navy);
+  font-family: var(--game-font);
+  font-size: clamp(9px, 1.7vmin, 13px);
+  font-weight: 800;
+  letter-spacing: .12em;
+  line-height: 1.3;
+  margin: 1em 0 0;
+  min-height: 1.3em;
+  text-transform: uppercase;
+}
+
+.boot-reload {
+  background: var(--cream);
+  border: 2px solid var(--espresso);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--medium-brown);
+  color: var(--espresso);
+  cursor: pointer;
+  font-size: clamp(10px, 1.8vmin, 13px);
+  font-weight: 900;
+  letter-spacing: .08em;
+  margin-top: 1.1em;
+  padding: .65em 1.1em;
+}
+
+.boot-screen.is-ready .boot-wordmark {
+  filter: saturate(1.12) drop-shadow(0 0 14px rgba(255, 255, 255, .75));
+  transform: skewX(-5deg) scale(1.015);
+}
+
+.boot-screen.is-ready .boot-progress span {
+  box-shadow: 0 0 10px rgba(0, 109, 89, .35);
+}
+
+.boot-screen.has-error .boot-progress span {
+  background: var(--burgundy);
+}
+
+.boot-screen.has-error .boot-readiness p {
+  color: var(--burgundy);
+}
+
+.boot-screen.is-leaving {
+  filter: brightness(1.08) blur(5px);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+@keyframes boot-horizon-open {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0);
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: .78;
+    transform: translateX(-50%) scaleX(1);
+  }
+}
+
+@keyframes boot-letter-rise {
+  0% {
+    filter: blur(8px);
+    opacity: 0;
+    transform: translateY(48%) scale(.72);
+  }
+  58% {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(-7%) scale(1.055);
+  }
+  100% {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes boot-subtitle-arrive {
+  from {
+    filter: blur(4px);
+    opacity: 0;
+    transform: translateY(.9em);
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes boot-sheen {
+  0% {
+    opacity: 0;
+    transform: translateX(-80%);
+  }
+  25% {
+    opacity: .66;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(80%);
+  }
+}
+
+@media (orientation: portrait) {
+  .boot-wordmark {
+    font-size: clamp(37px, 12.8vw, 70px);
+  }
+
+  .boot-readiness {
+    bottom: clamp(12px, 7vh, 62px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-screen::after,
+  .boot-horizon,
+  .boot-letter,
+  .boot-teachings {
+    animation: none;
+  }
+
+  .boot-horizon {
+    opacity: .78;
+    transform: translateX(-50%) scaleX(1);
+  }
+
+  .boot-letter,
+  .boot-teachings {
+    filter: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .boot-screen,
+  .boot-wordmark,
+  .boot-progress span {
+    transition-duration: .12s;
+  }
+}
+
+/* iPhone-safe controller deck.
+   Keep every control out of the text-selection/callout system, and arrange
+   B lower-left / A upper-right on the familiar Game Boy diagonal. */
+.controls,
+.controls * {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.controls button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+.action-controls {
+  --action-button-size: clamp(58px, 8vw, 84px);
+  --action-button-gap: clamp(8px, 1.4vw, 18px);
+  --action-button-rise: clamp(28px, 3.4vw, 42px);
+  align-items: start;
+  display: grid;
+  gap: var(--action-button-gap);
+  grid-template-columns: repeat(2, var(--action-button-size));
+  justify-content: end;
+  min-height: calc(var(--action-button-size) + var(--action-button-rise));
+}
+
+.action-controls button {
+  height: var(--action-button-size);
+  margin: 0;
+  width: var(--action-button-size);
+}
+
+.action-controls .button-b {
+  grid-column: 1;
+  margin-top: var(--action-button-rise);
+}
+
+.action-controls .button-a {
+  grid-column: 2;
+  margin-top: 0;
+}
+
+/* Original Harvest Moon GBA-inspired title composition.
+   The scene, title, and interface remain Little Bear's own; this adds the
+   gentle farm-life title-screen rhythm without copying another game's art. */
+.title-screen {
+  background: var(--dark-olive);
+}
+
+.title-screen::after {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 3px,
+    rgba(11, 13, 11, .07) 3px,
+    rgba(11, 13, 11, .07) 4px
+  );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 9;
+}
+
+.title-scrim {
+  background:
+    linear-gradient(90deg, rgba(41, 18, 4, .9) 0, rgba(41, 18, 4, .64) 40%, rgba(41, 18, 4, .08) 79%),
+    linear-gradient(180deg, rgba(18, 42, 67, .18), transparent 42%, rgba(41, 18, 4, .44));
+  z-index: 1;
+}
+
+.title-copy {
+  align-items: center;
+  inset: 5% auto 6% 4.2%;
+  justify-content: center;
+  text-align: center;
+  width: min(52%, 590px);
+  z-index: 3;
+}
+
+.title-logo-plate {
+  background: linear-gradient(180deg, rgba(250, 234, 165, .98), rgba(242, 236, 208, .95));
+  border: 3px solid var(--espresso);
+  box-shadow:
+    inset 0 0 0 3px var(--walnut),
+    inset 0 0 0 6px rgba(250, 234, 165, .82),
+    6px 7px 0 rgba(41, 18, 4, .66);
+  color: var(--espresso);
+  max-width: 590px;
+  padding: clamp(12px, 2.2vw, 24px) clamp(15px, 3vw, 34px) clamp(13px, 2.3vw, 25px);
+  position: relative;
+  width: 100%;
+}
+
+.title-logo-plate::before,
+.title-logo-plate::after {
+  background: var(--forest-green);
+  content: "";
+  height: 5px;
+  position: absolute;
+  top: -3px;
+  width: 20%;
+}
+
+.title-logo-plate::before {
+  left: 8%;
+}
+
+.title-logo-plate::after {
+  right: 8%;
+}
+
+.title-logo-plate .kicker {
+  color: var(--forest-green);
+  font-size: clamp(8px, 1.2vw, 13px);
+  letter-spacing: .14em;
+}
+
+.title-logo-plate h1 {
+  color: var(--espresso) !important;
+  font-size: clamp(25px, 4.7vw, 52px);
+  letter-spacing: -.07em;
+  line-height: .88;
+  margin: .24em 0 .2em;
+}
+
+.title-logo-plate h1 span {
+  color: var(--burgundy) !important;
+  display: inline-block;
+  font-size: .72em;
+  letter-spacing: -.05em;
+  margin-top: .08em;
+}
+
+.title-tagline {
+  color: var(--hunter-green);
+  font-size: clamp(9px, 1.35vw, 15px);
+  line-height: 1.25;
+  margin: .55em auto 0;
+  max-width: 32em;
+}
+
+.title-copy .app-readiness {
+  justify-content: center;
+  margin: clamp(12px, 1.7vw, 19px) 0 .6em;
+}
+
+.title-copy .title-actions {
+  gap: .8em;
+  justify-content: center;
+  margin-top: .2em;
+}
+
+.title-copy .title-actions button {
+  border-width: 3px;
+  box-shadow:
+    inset -2px -2px 0 rgba(74, 36, 7, .35),
+    4px 4px 0 rgba(41, 18, 4, .64);
+  font-size: clamp(10px, 1.45vw, 16px);
+  letter-spacing: .04em;
+  min-width: 12em;
+  padding: .68em .9em;
+}
+
+.title-copy .title-actions .primary-button {
+  background: var(--royal-yellow);
+  color: var(--espresso);
+}
+
+.title-copy .title-actions .secondary-button {
+  background: var(--beige);
+  color: var(--espresso);
+}
+
+.title-prompt {
+  color: var(--cream);
+  font-size: clamp(8px, 1.15vw, 13px);
+  font-weight: 900;
+  letter-spacing: .14em;
+  margin: clamp(12px, 1.8vw, 20px) 0 .45em;
+  animation: title-prompt-pulse 1.35s steps(2, end) infinite;
+}
+
+.title-prompt-mark {
+  background: var(--burgundy);
+  border: 2px solid var(--cream);
+  border-radius: 50%;
+  box-shadow: 2px 2px 0 var(--espresso);
+  display: inline-grid;
+  height: 1.8em;
+  margin-right: .35em;
+  place-items: center;
+  width: 1.8em;
+}
+
+.title-copy > small {
+  color: var(--cream);
+  font-size: clamp(7px, .95vw, 11px);
+  letter-spacing: .04em;
+}
+
+.title-footer {
+  bottom: max(8px, env(safe-area-inset-bottom));
+  color: rgba(250, 234, 165, .86);
+  font-size: clamp(7px, .85vw, 10px);
+  font-weight: 900;
+  letter-spacing: .12em;
+  margin: 0;
+  position: absolute;
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 4;
+}
+
+@keyframes title-prompt-pulse {
+  0%, 45% { opacity: 1; }
+  46%, 100% { opacity: .46; }
+}
+
+@media (max-width: 700px) {
+  .title-scrim {
+    background:
+      linear-gradient(180deg, rgba(41, 18, 4, .14), rgba(41, 18, 4, .26) 38%, rgba(41, 18, 4, .92) 78%),
+      linear-gradient(90deg, rgba(41, 18, 4, .2), transparent 55%);
+  }
+
+  .title-copy {
+    inset: 7% 6% 6%;
+    width: auto;
+  }
+
+  .title-logo-plate {
+    max-width: 520px;
+    padding: 11px 13px 13px;
+  }
+
+  .title-logo-plate .kicker {
+    font-size: clamp(7px, 2.2vw, 11px);
+  }
+
+  .title-logo-plate h1 {
+    font-size: clamp(25px, 8.8vw, 45px);
+  }
+
+  .title-tagline {
+    font-size: clamp(9px, 2.7vw, 14px);
+  }
+
+  .title-copy .title-actions {
+    flex-wrap: wrap;
+  }
+
+  .title-copy .title-actions button {
+    font-size: clamp(9px, 2.5vw, 13px);
+    min-width: 11em;
+  }
+
+  .title-prompt {
+    font-size: clamp(7px, 2.3vw, 11px);
+  }
+
+  .title-copy > small {
+    font-size: clamp(6px, 1.9vw, 10px);
+  }
+
+  .title-footer {
+    font-size: 7px;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-prompt {
+    animation: none;
+  }
+}
+
+/* Centered arcade title lockup.
+   This uses a red/white/ink/blue/yellow handheld palette and a rounded,
+   outlined display treatment, while keeping the Little Bear wordmark original. */
+:root {
+  --arcade-red: #e52521;
+  --arcade-blue: #0055a4;
+  --arcade-yellow: #ffd500;
+  --arcade-white: #fff7e1;
+  --arcade-ink: #101820;
+}
+
+.title-scrim {
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(41, 18, 4, .72) 0, rgba(41, 18, 4, .34) 35%, rgba(41, 18, 4, .08) 67%, transparent 82%),
+    linear-gradient(180deg, rgba(18, 42, 67, .16), transparent 40%, rgba(41, 18, 4, .42));
+}
+
+.title-copy {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: min(92%, 760px);
+}
+
+.title-logo-plate {
+  max-width: 720px;
+}
+
+.title-logo-plate::before {
+  background: var(--arcade-red);
+}
+
+.title-logo-plate::after {
+  background: var(--arcade-blue);
+}
+
+.title-logo-plate .kicker {
+  color: var(--arcade-blue);
+}
+
+.title-logo-plate h1,
+.title-logo-plate h1 span {
+  color: var(--arcade-red) !important;
+  font-family: "Balsamiq Sans", sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.title-logo-plate h1 {
+  -webkit-text-stroke: 3px var(--arcade-ink);
+  paint-order: stroke fill;
+}
+
+.title-logo-plate h1 span {
+  -webkit-text-stroke-width: 2px;
+}
+
+.title-tagline {
+  color: var(--arcade-ink);
+  font-weight: 700;
+}
+
+.title-copy .title-actions .primary-button {
+  background: var(--arcade-yellow);
+  border-color: var(--arcade-ink);
+  color: var(--arcade-ink);
+}
+
+.title-copy .title-actions .secondary-button {
+  background: var(--arcade-white);
+  border-color: var(--arcade-ink);
+  color: var(--arcade-ink);
+}
+
+.title-prompt-mark {
+  background: var(--arcade-red);
+  border-color: var(--arcade-white);
+  color: var(--arcade-white);
+}
+
+.title-footer {
+  left: 50%;
+  right: auto;
+  text-align: center;
+  transform: translateX(-50%);
+  width: max-content;
+}
+
+/* Keep the title clean and let the approved landscape carry the scene. */
+.title-screen,
+.title-screen * {
+  text-shadow: none !important;
+}
+
+@media (max-width: 700px) {
+  .title-copy {
+    left: 6%;
+    right: 6%;
+    transform: none;
+    width: auto;
+  }
+
+  .title-footer {
+    left: 0;
+    right: 0;
+    transform: none;
+    width: auto;
   }
 }

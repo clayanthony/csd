@@ -3,11 +3,13 @@
 
   const canvas = document.querySelector("#game");
   const gameFrame = document.querySelector("#game-frame");
+  const controls = document.querySelector(".controls");
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
 
   const ui = Object.fromEntries([
-    "hud", "objective", "seen-count", "location-label", "title-screen", "start-button", "continue-button",
+    "boot-screen", "boot-status", "boot-progress-fill", "boot-reload-button", "hud", "objective", "seen-count",
+    "location-label", "title-screen", "start-button", "continue-button",
     "mission-banner", "mission-banner-kicker", "mission-banner-title", "mission-banner-name", "mission-banner-theme",
     "mission-word-preview", "begin-mission-button", "word-card", "word-icon", "exposure-label", "cree-word",
     "english-word", "translation-note", "word-meta", "translation-button", "word-continue-button", "challenge",
@@ -21,6 +23,7 @@
     "pause-map-button", "restart-button", "restart-confirm", "cancel-restart-button", "confirm-restart-button",
     "ending-screen", "ending-map-button", "toast", "menu-button", "button-a", "button-b"
   ].map((id) => [camel(id), document.querySelector(`#${id}`)]));
+  const musicButtons = [...document.querySelectorAll("[data-music-toggle]")];
 
   const CAMPAIGN = window.LITTLE_BEAR_CAMPAIGN;
   if (!CAMPAIGN || CAMPAIGN.words?.length !== 300 || CAMPAIGN.stages?.length !== 50) {
@@ -28,6 +31,7 @@
   }
 
   const SAVE_KEY = "little-bear-words-of-home-300-v1";
+  const MINIMUM_BOOT_TIME = 2400;
   const BASE_VIEW = Object.freeze({ width: 768, height: 512 });
   const VIEW = { ...BASE_VIEW };
   const WORLD = { width: 1536, height: 1024 };
@@ -80,12 +84,206 @@
   });
   let state = freshState();
 
+  const music = (() => {
+    const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+    const MUSIC_KEY = "little-bear-words-of-home-music-v1";
+    const TEMPO = 96;
+    const BEAT = 60 / TEMPO;
+    const HALF_BEAT = BEAT / 2;
+    const BAR = BEAT * 4;
+    const SCHEDULE_AHEAD = .32;
+    const CHORDS = [
+      [60, 64, 67, 71], // Cmaj7
+      [57, 60, 64, 67], // Am7
+      [53, 57, 60, 64], // Fmaj7
+      [55, 59, 62, 67]  // Gsus2
+    ];
+    // An original, eight-bar pentatonic melody: gentle rises, small rests,
+    // and a warm return to the home chord.
+    const MELODY = [
+      [76, 79, 81, 79, 76, null, 74, 72],
+      [72, 74, 76, 79, 76, 74, 72, null],
+      [69, 72, 76, 74, 72, null, 69, 67],
+      [72, 74, 76, 79, 81, 79, 76, 74],
+      [76, 79, 84, 81, 79, 76, 74, 72],
+      [72, 74, 76, 79, 76, 74, 72, 67],
+      [69, 72, 76, 79, 76, 74, 72, 69],
+      [67, null, 72, 74, 76, 74, 72, 67]
+    ];
+    let audioContext = null;
+    let masterGain = null;
+    let scheduleTimer = 0;
+    let nextBarTime = 0;
+    let barIndex = 0;
+    let playing = false;
+    let enabled = true;
+
+    try {
+      enabled = localStorage.getItem(MUSIC_KEY) !== "off";
+    } catch {
+      // The tune still works when storage is unavailable.
+    }
+
+    function updateButtons() {
+      musicButtons.forEach((button) => {
+        button.textContent = enabled ? "MUSIC: ON" : "MUSIC: OFF";
+        button.setAttribute("aria-pressed", String(enabled));
+      });
+    }
+
+    function midiToFrequency(note) {
+      return 440 * (2 ** ((note - 69) / 12));
+    }
+
+    function ensureContext() {
+      if (!AudioContextCtor) return false;
+      try {
+        if (!audioContext) {
+          audioContext = new AudioContextCtor();
+          masterGain = audioContext.createGain();
+          masterGain.gain.value = .0001;
+          masterGain.connect(audioContext.destination);
+        }
+        if (audioContext.state === "suspended") {
+          const resume = audioContext.resume?.();
+          if (resume?.catch) resume.catch(() => {});
+        }
+        return true;
+      } catch {
+        audioContext = null;
+        masterGain = null;
+        return false;
+      }
+    }
+
+    function scheduleTone(note, when, duration, options = {}) {
+      if (!audioContext || !masterGain || !Number.isFinite(note)) return;
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const peak = options.volume ?? .035;
+      const attack = Math.min(options.attack ?? .014, duration * .4);
+      const decayAt = when + attack + Math.max(.045, duration * .34);
+      const releaseAt = when + Math.max(duration, attack + .06);
+      oscillator.type = options.type || "triangle";
+      oscillator.frequency.setValueAtTime(midiToFrequency(note), when);
+      if (options.detune) oscillator.detune.setValueAtTime(options.detune, when);
+      gain.gain.setValueAtTime(.0001, when);
+      gain.gain.linearRampToValueAtTime(peak, when + attack);
+      gain.gain.exponentialRampToValueAtTime(Math.max(.0001, peak * .34), decayAt);
+      gain.gain.exponentialRampToValueAtTime(.0001, releaseAt);
+      oscillator.connect(gain);
+      gain.connect(masterGain);
+      oscillator.start(when);
+      oscillator.stop(releaseAt + .04);
+    }
+
+    function scheduleBar(index, when) {
+      const chord = CHORDS[index % CHORDS.length];
+      const melody = MELODY[index % MELODY.length];
+      chord.forEach((note, voiceIndex) => {
+        scheduleTone(note, when + voiceIndex * .012, BAR * .92, {
+          type: "sine",
+          volume: .009,
+          attack: .18
+        });
+      });
+      scheduleTone(chord[0] - 12, when, BEAT * 1.65, {
+        type: "triangle",
+        volume: .028,
+        attack: .035
+      });
+      scheduleTone(chord[0] - 12, when + BEAT * 2, BEAT * 1.35, {
+        type: "triangle",
+        volume: .023,
+        attack: .035
+      });
+      melody.forEach((note, noteIndex) => {
+        if (note === null) return;
+        scheduleTone(note, when + noteIndex * HALF_BEAT, BEAT * .43, {
+          type: "triangle",
+          volume: .041,
+          attack: .012
+        });
+      });
+      if (index % 2 === 1) {
+        scheduleTone(chord[2] + 12, when + BEAT * 1.5, BEAT * .24, {
+          type: "sine",
+          volume: .016,
+          attack: .008
+        });
+      }
+    }
+
+    function scheduleNextBars() {
+      if (!playing || !audioContext) return;
+      while (nextBarTime < audioContext.currentTime + SCHEDULE_AHEAD) {
+        scheduleBar(barIndex, nextBarTime);
+        barIndex = (barIndex + 1) % MELODY.length;
+        nextBarTime += BAR;
+      }
+      scheduleTimer = window.setTimeout(scheduleNextBars, 45);
+    }
+
+    function fadeTo(value, duration = .18) {
+      if (!audioContext || !masterGain) return;
+      const now = audioContext.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(Math.max(.0001, masterGain.gain.value), now);
+      masterGain.gain.linearRampToValueAtTime(value, now + duration);
+    }
+
+    function start() {
+      if (!enabled || playing || !ensureContext()) return false;
+      playing = true;
+      barIndex = 0;
+      nextBarTime = audioContext.currentTime + .08;
+      fadeTo(.12, .7);
+      scheduleNextBars();
+      return true;
+    }
+
+    function pause() {
+      if (!playing) return;
+      playing = false;
+      window.clearTimeout(scheduleTimer);
+      scheduleTimer = 0;
+      fadeTo(.0001, .22);
+    }
+
+    function resume() {
+      if (enabled) start();
+    }
+
+    function setEnabled(nextEnabled) {
+      enabled = Boolean(nextEnabled);
+      try {
+        localStorage.setItem(MUSIC_KEY, enabled ? "on" : "off");
+      } catch {
+        // The preference is session-only when storage is unavailable.
+      }
+      updateButtons();
+      if (enabled) start();
+      else pause();
+    }
+
+    function toggle() {
+      setEnabled(!enabled);
+    }
+
+    updateButtons();
+    return { start, pause, resume, toggle, setEnabled };
+  })();
+
   function camel(id) {
     return id.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
   }
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
+  }
+
+  function wait(milliseconds) {
+    return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
   }
 
   function viewportForAspect(aspect) {
@@ -264,11 +462,13 @@
   }
 
   function beginStagePlay() {
+    music.start();
     setMode("play");
     canvas.focus({ preventScroll: true });
   }
 
   function startFreshJourney() {
+    music.start();
     state = freshState();
     mapWorldView = 1;
     selectedMapTrail = 1;
@@ -278,6 +478,7 @@
   }
 
   function continueJourneyFromSave() {
+    music.start();
     if (!loadState()) {
       startFreshJourney();
       return;
@@ -850,33 +1051,94 @@
 
   function loadImage(image, source) {
     return new Promise((resolve, reject) => {
-      image.addEventListener("load", resolve, { once: true });
-      image.addEventListener("error", reject, { once: true });
+      image.addEventListener("load", () => resolve(image), { once: true });
+      image.addEventListener("error", () => reject(new Error(`Could not load ${source}`)), { once: true });
       image.src = source;
+    }).then(async (loadedImage) => {
+      if (typeof loadedImage.decode === "function") await loadedImage.decode();
+      if (!loadedImage.naturalWidth || !loadedImage.naturalHeight) {
+        throw new Error(`Could not decode ${source}`);
+      }
+      return loadedImage;
     });
   }
 
-  function loadAssets() {
+  function loadFont(fontDescription) {
+    if (!document.fonts?.load) return Promise.resolve();
+    return document.fonts.load(fontDescription).then((faces) => {
+      if (!faces.length || !document.fonts.check(fontDescription)) {
+        throw new Error(`Could not load ${fontDescription}`);
+      }
+    });
+  }
+
+  function updateBootProgress(complete, total) {
+    const progress = total > 0 ? complete / total : 0;
+    ui.bootScreen.style.setProperty("--boot-progress", String(progress));
+    ui.bootStatus.textContent = `PREPARING FIVE WORLDS · ${complete} OF ${total} ASSET SETS`;
+  }
+
+  async function loadAssets() {
     ui.startButton.disabled = true;
     ui.continueButton.disabled = true;
     ui.startButton.textContent = "LOADING 300 OBJECTS…";
+
     const requests = assets.maps.map((image, index) => loadImage(image, WORLDS[index].map));
     requests.push(loadImage(assets.bear, "assets/bear-sprites-v2.png"));
     requests.push(loadImage(assets.objects, "assets/object-sprites-300.png"));
     if (document.fonts?.load) {
-      requests.push(document.fonts.load('400 16px "Balsamiq Sans"'));
-      requests.push(document.fonts.load('700 16px "Balsamiq Sans"'));
+      requests.push(loadFont('400 16px "Balsamiq Sans"'));
+      requests.push(loadFont('700 16px "Balsamiq Sans"'));
     }
-    return Promise.all(requests).then(() => {
+
+    let complete = 0;
+    updateBootProgress(complete, requests.length);
+
+    try {
+      await Promise.all(requests.map((request) => request.then((result) => {
+        complete += 1;
+        updateBootProgress(complete, requests.length);
+        return result;
+      })));
+      if (document.fonts?.ready) await document.fonts.ready;
+
       assetsReady = true;
       ui.startButton.disabled = false;
       ui.continueButton.disabled = false;
-      ui.startButton.textContent = "PLAY ALL WORLDS";
+      ui.startButton.textContent = "PRESS A · BEGIN";
+      ui.continueButton.textContent = "CONTINUE JOURNEY";
       if (mode === "journal") renderJournal();
-    }).catch(() => {
+    } catch (error) {
+      assetsReady = false;
       ui.startButton.textContent = "ART COULD NOT LOAD";
       ui.startButton.title = "Reload or serve the game from a local web server.";
-    });
+      throw error;
+    }
+  }
+
+  async function runBootSequence() {
+    const [assetResult] = await Promise.allSettled([
+      loadAssets(),
+      wait(MINIMUM_BOOT_TIME)
+    ]);
+
+    if (assetResult.status === "rejected") {
+      console.error("A required game asset could not be prepared.", assetResult.reason);
+      ui.bootStatus.textContent = "SOME ARTWORK COULD NOT LOAD · PLEASE RELOAD";
+      ui.bootScreen.classList.add("has-error");
+      ui.bootReloadButton.classList.remove("hidden");
+      ui.bootReloadButton.focus({ preventScroll: true });
+      return;
+    }
+
+    ui.bootScreen.style.setProperty("--boot-progress", "1");
+    ui.bootStatus.textContent = "ALL FIVE WORLDS · 300 OBJECTS READY";
+    ui.bootScreen.classList.add("is-ready");
+    await wait(480);
+    ui.bootScreen.classList.add("is-leaving");
+    await wait(680);
+    ui.bootScreen.hidden = true;
+    gameFrame.setAttribute("aria-busy", "false");
   }
 
   function directionFromKey(key) {
@@ -889,7 +1151,8 @@
   }
 
   function actionA() {
-    if (mode === "mission") beginStagePlay();
+    if (mode === "title" && assetsReady) startFreshJourney();
+    else if (mode === "mission") beginStagePlay();
     else if (mode === "play") interact();
     else if (mode === "word") closeWord();
     else if (mode === "challenge") nextChallengeRound();
@@ -909,6 +1172,11 @@
   }
 
   window.addEventListener("keydown", (event) => {
+    if (mode === "title" && event.key.toLowerCase() === "a") {
+      event.preventDefault();
+      if (!event.repeat) actionA();
+      return;
+    }
     const direction = directionFromKey(event.key);
     if (direction) {
       event.preventDefault();
@@ -996,6 +1264,7 @@
 
   ui.startButton.addEventListener("click", startFreshJourney);
   ui.continueButton.addEventListener("click", continueJourneyFromSave);
+  ui.bootReloadButton.addEventListener("click", () => window.location.reload());
   ui.beginMissionButton.addEventListener("click", beginStagePlay);
   ui.wordContinueButton.addEventListener("click", closeWord);
   ui.translationButton.addEventListener("click", () => {
@@ -1013,6 +1282,7 @@
     renderJournal();
   });
   ui.mapButton.addEventListener("click", () => openMap("play"));
+  musicButtons.forEach((button) => button.addEventListener("click", () => music.toggle()));
   ui.mapCloseButton.addEventListener("click", closeMap);
   ui.previousActButton.addEventListener("click", () => changeMapWorld(-1));
   ui.nextActButton.addEventListener("click", () => changeMapWorld(1));
@@ -1026,11 +1296,20 @@
   ui.buttonA.addEventListener("click", actionA);
   ui.buttonB.addEventListener("click", actionB);
 
+  ["contextmenu", "selectstart", "dragstart"].forEach((eventName) => {
+    controls.addEventListener(eventName, (event) => event.preventDefault());
+  });
+
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden && mode === "play") {
-      held.clear();
-      saveState();
-      setMode("pause");
+    if (document.hidden) {
+      music.pause();
+      if (mode === "play") {
+        held.clear();
+        saveState();
+        setMode("pause");
+      }
+    } else {
+      music.resume();
     }
   });
 
@@ -1051,6 +1330,6 @@
   if ("ResizeObserver" in window) {
     new ResizeObserver(resizeViewport).observe(gameFrame);
   }
-  loadAssets();
+  runBootSequence();
   requestAnimationFrame(loop);
 })();
